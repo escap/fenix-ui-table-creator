@@ -13,7 +13,8 @@ define(function () {
             text: '//fenixapps.fao.org/repository/js/requirejs/plugins/text/2.0.12/text',
             jquery: "//ajax.googleapis.com/ajax/libs/jquery/2.0.0/jquery.min",
             jqwidgets : '//fenixapps.fao.org/repository/js/jqwidgets/3.1/jqx-all',
-            underscore: "//fenixapps.fao.org/repository/js/underscore/1.7.0/underscore.min"
+            underscore: "//fenixapps.fao.org/repository/js/underscore/1.7.0/underscore.min",
+            moment : "//fenixapps.fao.org/repository/js/moment/2.9.0/moment.min"
 
         },
 

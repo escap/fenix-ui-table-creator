@@ -13,7 +13,6 @@ define([
 
         function TableCreator() {
             $.extend(true, this, defaultOptions);
-            debugger;
         }
 
         TableCreator.prototype.render = function (config) {

@@ -10,7 +10,7 @@ requirejs(['./paths'], function (paths) {
         $.get("http://faostat3.fao.org/d3s2/v2/msd/resources/uid/CountrySTAT_215CFE020?dsd=true&full=true&order=time", function (model) {
 
             tableCreator.render({
-                container: 'grid',
+                container: '.content',
                 model: model
             });
         })

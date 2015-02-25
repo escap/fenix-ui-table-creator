@@ -3,7 +3,8 @@ define([
         'jquery',
         'fx-c-c/config/adapters/d3s_jqwidgets',
         'underscore',
-        'jqwidgets'
+        'jqwidgets',
+        'moment'
     ],
     function ($, baseConfig, _) {
 
@@ -11,9 +12,17 @@ define([
 
             lang: 'EN',
 
+            s: {
+                CONTENT: '[data-role="content"]'
+            },
+
             dataSource: {
                 source: {},
                 columns : []
+            },
+
+            translation: {
+
             },
 
             aux: {
@@ -126,100 +135,6 @@ define([
             this.dataSource.source = new $.jqx.dataAdapter({localdata: this.$originalDatasource, datatype:"array"});
         };
 
-     /*   D3S_JQWidgets_Adapter.prototype._processYAxisColumn = function (column) {
-
-            if (!column){
-                return;
-            }
-
-            this.data.yAxis = [];
-
-            if (column.dataType === "code") {
-                var values = _.values(this.aux.code2label[this._getColumnBySubject(this.yAxisSubject).id]);
-
-                _.each(values, function (v) {
-                    this.data.yAxis.push({title: {text: v}});
-                }, this);
-
-            } else {
-                console.warn("TODO yAxis is not coded. Method has to be implemented.");
-            }
-        };*/
-/*
-        D3S_JQWidgets_Adapter.prototype._processSeriesForTimeSeries = function () {
-
-            this.data.series = [];
-
-            this.model.data.sort(_.bind(function (a, b){
-
-                if (a[this.columnXAxisIndex] < b[this.columnXAxisIndex] ) {
-                    return -1;
-                }
-                if (a[this.columnXAxisIndex] > b[this.columnXAxisIndex] ) {
-                    return 1;
-                }
-                // a must be equal to b
-                return 0;
-            }, this));
-
-
-            this.$data.forEach(_.bind(function (row) {
-
-                var name = this._createSeriesName(row),
-                    serie = _.findWhere(this.data.series, {name: name}) || {name: name},
-                    yValue, yLabel, xValue, xLabel, value;
-
-                if (!serie.hasOwnProperty('yAxis')) {
-                    if (this.columnYAxisIndex) {
-                        yValue = row[this.columnYAxisIndex];
-                        yLabel = this.aux.code2label[this._getColumnBySubject(this.yAxisSubject).id][yValue];
-                        serie.yAxis = this._getYAxisIndex(yLabel);
-                    }
-                }
-
-                if (!serie.hasOwnProperty('data')) {
-                    serie.data = [];
-                }
-
-                xValue = row[this.columnXAxisIndex];
-                xLabel = this.aux.code2label[this._getColumnBySubject(this.xAxisSubject).id][xValue];
-                value = row[this.columnValueIndex];
-                //console.log(name, xLabel, value);
-                serie.data.push([xLabel, value]);
-
-                this.data.series.push(serie);
-
-            }, this));
-
-            //this.data.series = this.data.series.slice(0, 5)
-        };
-
-        D3S_JQWidgets_Adapter.prototype._getYAxisIndex = function (label) {
-
-            var index = -1;
-
-            _.each(this.data.yAxis, function (yAxis, i) {
-                if (yAxis.title.text === label) { index = i }
-            }, this);
-
-            if (index < 0) {
-                console.error("Data contains an unknown yAxis value: " + label);
-            }
-
-            return index;
-        };
-
-        D3S_JQWidgets_Adapter.prototype._createSeriesName = function (row) {
-
-            var name = '';
-
-            _.each(this.aux.nameIndexes, function (index) {
-                var id = this.aux.index2id[index];
-                name = name.concat(this.aux.code2label[id][row[index]] + ' ');
-            }, this);
-
-            return name;
-        };*/
 
         D3S_JQWidgets_Adapter.prototype._validateData = function () {
 
@@ -247,14 +162,13 @@ define([
         };
 
         D3S_JQWidgets_Adapter.prototype._renderTable = function () {
-            debugger;
 
             this.$container.jqxGrid(this.config);
         };
 
         D3S_JQWidgets_Adapter.prototype._initVariable = function () {
 
-            this.$container = $("#"+this.container);
+            this.$container = $(this.container).find(this.s.CONTENT);
 
             this.$metadata = this.model.metadata;
             this.$dsd = this.$metadata.dsd;
@@ -273,9 +187,9 @@ define([
                 this.errors['container'] = "'container' attribute not present.";
             }
 
-           /* if ($(this.container).find(this.s.CONTENT) === 0) {
+            if ($(this.container).find(this.s.CONTENT) === 0) {
                 this.errors['container'] = "'container' is not a valid HTML element.";
-            }*/
+            }
 
             //Model
             if (!this.hasOwnProperty("model")) {
@@ -311,11 +225,6 @@ define([
                 this.errors['data'] = "Model does not container 'data' attribute.";
             }
 
-            /*// seriesSubject
-            if (!Array.isArray(this.seriesSubject)) {
-                this.errors['seriesSubject'] = "SeriesSubject is not an Array element";
-            }
-*/
             return (Object.keys(this.errors).length === 0);
         };
 
@@ -353,14 +262,24 @@ define([
                         map[v.code] = this._getLabel(v, 'label');
                     }, this);
                     break;
-                case 'year' :
-                    values = _.each(column.values.timeList, function (v) {
-                        map[v] = Date.UTC(v, 0);
+
+                case 'customCode' :
+                    values = _.each(column.values.codes[0].codes, function (v) {
+                        map[v.code] = this._getLabel(v, 'label');
                     }, this);
                     break;
+
+                case 'year' :
+                    values = _.each(column.values.timeList, function (v) {
+                        debugger;
+                        map[v] = v;
+                    }, this);
+                    break;
+
+
             }
 
-            // TODO code, customCode,  enumeration, date, month, year, time, text,label, number, percentage, bool
+            // TODO  customCode,  enumeration, date, month, year, time, text,label, number, percentage, bool
 
             return map;
         };
