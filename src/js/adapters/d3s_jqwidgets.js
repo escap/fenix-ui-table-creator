@@ -24,7 +24,8 @@ define([
                 code2label: {},
                 subject2id: {},
                 id2subject: {},
-                nameIndexes: []
+                nameIndexes: [],
+                id2Datatypes : {}
             }
         };
 
@@ -72,6 +73,10 @@ define([
                             this.columnValueIndex = index;
                         }
                     }
+
+                    if (column.hasOwnProperty('dataType')) {
+                        this.aux.id2Datatypes[index] = column['dataType']
+                    }
                 }
 
                 if (column.hasOwnProperty('values')) {
@@ -97,7 +102,16 @@ define([
                 var row = {};
 
                 for(var j=0 ; j< titlesLength; j++){
-                       row[this.$titles[j]] = (this.$data[i][j])? this.$data[i][j] : null;
+                    // if data is not a number is a label
+                    if(this.aux.id2Datatypes[j] != 'number') {
+                        row[this.$titles[j]] =
+                            (this.$data[i][j]) ?
+                                this.aux.code2label[this.aux.index2id[j]][this.$data[i][j]] : null;
+                    }else{
+                        row[this.$titles[j]] =
+                            (this.$data[i][j]) ?
+                                this.$data[i][j] : null;
+                    }
                        if( i==0) {
                            var column = {};
                            column['text'] = this.$titles[j];
