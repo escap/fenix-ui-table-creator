@@ -49,7 +49,7 @@ define([
                 this._initVariable();
                 this._prepareData();
                 if (this._validateData() === true) {
-                    this._onValidateDataSuccess();
+                    this._onValidateDataSuccess(config);
                 } else {
                     this._onValidateDataError();
                 }
@@ -58,6 +58,9 @@ define([
                 throw new Error("FENIX Chart creator has not a valid configuration");
             }
         };
+
+
+
 
         D3S_JQWidgets_Adapter.prototype._prepareData = function () {
 
@@ -138,7 +141,6 @@ define([
             this.dataSource.source = new $.jqx.dataAdapter({localdata: this.$originalDatasource, datatype:"array"});
         };
 
-
         D3S_JQWidgets_Adapter.prototype._validateData = function () {
 
             this.errors = {};
@@ -146,8 +148,8 @@ define([
             return (Object.keys(this.errors).length === 0);
         };
 
-        D3S_JQWidgets_Adapter.prototype._onValidateDataSuccess = function () {
-            this._createConfiguration();
+        D3S_JQWidgets_Adapter.prototype._onValidateDataSuccess = function (config) {
+            this._createConfiguration(config);
             this._renderTable();
         };
 
@@ -160,8 +162,9 @@ define([
 
         };
 
-        D3S_JQWidgets_Adapter.prototype._createConfiguration = function () {
-           this.config = $.extend(true, baseConfig,this.dataSource );
+        D3S_JQWidgets_Adapter.prototype._createConfiguration = function (config) {
+            this.config =  (config.config)? $.extend(true, config.config,this.dataSource ):
+                $.extend(true, baseConfig,this.dataSource );
         };
 
         D3S_JQWidgets_Adapter.prototype._renderTable = function () {
@@ -257,7 +260,7 @@ define([
 
         D3S_JQWidgets_Adapter.prototype._getLabelFromLabelDataType = function (obj) {
 
-            var label;
+            var label,keys;
 
                 if (obj.hasOwnProperty(this.lang)) {
                     label = obj[this.lang];

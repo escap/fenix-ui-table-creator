@@ -38,7 +38,7 @@ define([
 
                 //currently both of them are sync fns
                 self.template.render(config);
-                self.adapter.render(config);
+                 self.adapter.render(config);
             });
         };
 
