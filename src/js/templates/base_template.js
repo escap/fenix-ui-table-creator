@@ -51,5 +51,9 @@ define([
             return (Object.keys(this.errors).length === 0);
         };
 
+        Base_template.prototype.destroy = function(){
+            this.$container.empty();
+        }
+
         return Base_template;
     });

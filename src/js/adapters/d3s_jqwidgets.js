@@ -106,13 +106,16 @@ define([
         D3S_JQWidgets_Adapter.prototype._prepareDataForTableType = function () {
 
             var titlesLength = this.$titles.length;
+            debugger;
 
             for(var i=0; i<this.$data.length; i++){
                 var row = {};
 
                 for(var j=0 ; j< titlesLength; j++){
                     // if data is not a number is a label
-                    if(this.aux.id2Datatypes[j] != 'number') {
+                    if(this.aux.id2Datatypes[j] != 'number' && this.aux.id2Datatypes[j] != 'text'  && this.aux.id2Datatypes[j] != 'boolean'
+                        &&  this.aux.id2Datatypes[j] != 'percentage'
+                        &&  this.aux.id2Datatypes[j] != 'enumeration') {
                         row[this.$titles[j]] =
                             (this.$data[i][j]) ?
                                 this.aux.code2label[this.aux.index2id[j]][this.$data[i][j]] : null;
@@ -251,6 +254,28 @@ define([
             return label;
         };
 
+
+        D3S_JQWidgets_Adapter.prototype._getLabelFromLabelDataType = function (obj) {
+
+            var label;
+
+                if (obj.hasOwnProperty(this.lang)) {
+                    label = obj[this.lang];
+                } else {
+
+                    keys = Object.keys(obj);
+
+                    if (keys.length > 0) {
+                        label = obj[keys[0]];
+                    }else{
+                        label = null;
+                    }
+
+            }
+
+            return label;
+        };
+
         D3S_JQWidgets_Adapter.prototype._createCode2LabelMap = function (column) {
 
             var map = {},
@@ -270,16 +295,24 @@ define([
                     break;
 
                 case 'year' :
+                case 'month':
+                case 'date' :
+                case 'time' :
                     values = _.each(column.values.timeList, function (v) {
-                        debugger;
                         map[v] = v;
                     }, this);
                     break;
 
 
+                case 'label':
+                    values = _.each(column.values.timeList, function (v) {
+                        map[v] = this._getLabelFromLabelDataType(v)
+                    }, this);
+
+                    break;
+
             }
 
-            // TODO  customCode,  enumeration, date, month, year, time, text,label, number, percentage, bool
 
             return map;
         };
@@ -312,6 +345,10 @@ define([
 
             return -1;
         };
+
+        D3S_JQWidgets_Adapter.prototype.destroy = function(){
+            this.$container.jqxGrid('destroy');
+        }
 
         return D3S_JQWidgets_Adapter;
     });

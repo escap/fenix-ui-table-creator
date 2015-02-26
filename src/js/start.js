@@ -56,5 +56,13 @@ define([
             return true;
         };
 
+        TableCreator.prototype.destroy = function(){
+
+            if(this.template)this.template.destroy();
+
+            if(this.adapter) this.adapter.destroy();
+
+        }
+
         return TableCreator;
     });
