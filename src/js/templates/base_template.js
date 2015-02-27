@@ -7,9 +7,11 @@ define([
 
         var defaultOptions = {};
 
+
         function Base_template() {
             $.extend(true, this, defaultOptions);
         }
+
 
         Base_template.prototype.render = function (config) {
             $.extend(true, this, config);
@@ -23,13 +25,16 @@ define([
             }
         };
 
+
         Base_template.prototype._injectTemplate = function () {
             this.$container.html(template);
         };
 
+
         Base_template.prototype._initVariable = function () {
             this.$container = $(this.container);
         };
+
 
         Base_template.prototype._validateInput = function () {
 
@@ -51,9 +56,11 @@ define([
             return (Object.keys(this.errors).length === 0);
         };
 
-        Base_template.prototype.destroy = function(){
+
+        Base_template.prototype.destroy = function () {
             this.$container.empty();
         }
+
 
         return Base_template;
     });

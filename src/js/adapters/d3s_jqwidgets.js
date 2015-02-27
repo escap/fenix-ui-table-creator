@@ -4,7 +4,8 @@ define([
         'fx-c-c/config/adapters/d3s_jqwidgets',
         'underscore',
         'jqwidgets',
-        'moment'
+        'moment',
+        'amplify'
     ],
     function ($, baseConfig, _) {
 
@@ -18,12 +19,10 @@ define([
 
             dataSource: {
                 source: {},
-                columns : []
+                columns: []
             },
 
-            translation: {
-
-            },
+            translation: {},
 
             aux: {
                 ids: [],
@@ -34,13 +33,18 @@ define([
                 subject2id: {},
                 id2subject: {},
                 nameIndexes: [],
-                id2Datatypes : {}
+                id2Datatypes: {}
             }
-        };
+        },
+            e = {
+                DESTROY: 'fx.component.table.destroy',
+                READY : 'fx.component.table.ready'
+            };
 
         function D3S_JQWidgets_Adapter() {
             $.extend(true, this, defaultOptions);
         }
+
 
         D3S_JQWidgets_Adapter.prototype.render = function (config) {
             $.extend(true, this, config);
@@ -58,8 +62,6 @@ define([
                 throw new Error("FENIX Chart creator has not a valid configuration");
             }
         };
-
-
 
 
         D3S_JQWidgets_Adapter.prototype._prepareData = function () {
@@ -94,7 +96,7 @@ define([
                 if (column.hasOwnProperty('values')) {
                     this.aux.code2label[column['id']] = this._createCode2LabelMap(column);
                 }
-                this.$titles.push( column.title[defaultOptions.lang] );
+                this.$titles.push(column.title[defaultOptions.lang]);
 
                 this.aux.nameIndexes.push(index);
 
@@ -106,40 +108,41 @@ define([
             }
         };
 
+
         D3S_JQWidgets_Adapter.prototype._prepareDataForTableType = function () {
 
             var titlesLength = this.$titles.length;
-            debugger;
 
-            for(var i=0; i<this.$data.length; i++){
+            for (var i = 0; i < this.$data.length; i++) {
                 var row = {};
 
-                for(var j=0 ; j< titlesLength; j++){
+                for (var j = 0; j < titlesLength; j++) {
                     // if data is not a number is a label
-                    if(this.aux.id2Datatypes[j] != 'number' && this.aux.id2Datatypes[j] != 'text'  && this.aux.id2Datatypes[j] != 'boolean'
-                        &&  this.aux.id2Datatypes[j] != 'percentage'
-                        &&  this.aux.id2Datatypes[j] != 'enumeration') {
+                    if (this.aux.id2Datatypes[j] != 'number' && this.aux.id2Datatypes[j] != 'text' && this.aux.id2Datatypes[j] != 'boolean'
+                        && this.aux.id2Datatypes[j] != 'percentage'
+                        && this.aux.id2Datatypes[j] != 'enumeration') {
                         row[this.$titles[j]] =
                             (this.$data[i][j]) ?
                                 this.aux.code2label[this.aux.index2id[j]][this.$data[i][j]] : null;
-                    }else{
+                    } else {
                         row[this.$titles[j]] =
                             (this.$data[i][j]) ?
                                 this.$data[i][j] : null;
                     }
-                       if( i==0) {
-                           var column = {};
-                           column['text'] = this.$titles[j];
-                           column['datafield'] = this.$titles[j];
-                           this.dataSource.columns.push(column)
-                       }
-                   }
+                    if (i == 0) {
+                        var column = {};
+                        column['text'] = this.$titles[j];
+                        column['datafield'] = this.$titles[j];
+                        this.dataSource.columns.push(column)
+                    }
+                }
                 this.$originalDatasource[i] = row;
             }
 
 
-            this.dataSource.source = new $.jqx.dataAdapter({localdata: this.$originalDatasource, datatype:"array"});
+            this.dataSource.source = new $.jqx.dataAdapter({localdata: this.$originalDatasource, datatype: "array"});
         };
+
 
         D3S_JQWidgets_Adapter.prototype._validateData = function () {
 
@@ -148,29 +151,40 @@ define([
             return (Object.keys(this.errors).length === 0);
         };
 
+
         D3S_JQWidgets_Adapter.prototype._onValidateDataSuccess = function (config) {
             this._createConfiguration(config);
             this._renderTable();
         };
 
+
         D3S_JQWidgets_Adapter.prototype._showConfigurationForm = function () {
             alert("FORM");
         };
+
 
         D3S_JQWidgets_Adapter.prototype._onValidateDataError = function () {
             this._showConfigurationForm();
 
         };
 
+
         D3S_JQWidgets_Adapter.prototype._createConfiguration = function (config) {
-            this.config =  (config.config)? $.extend(true, config.config,this.dataSource ):
-                $.extend(true, baseConfig,this.dataSource );
+
+            this.config = (config.options) ? $.extend(true, config.options, this.dataSource) :
+                $.extend(true, baseConfig, this.dataSource);
+
+            this.config.ready = function () {
+                amplify.publish(e.READY, this);
+            }
         };
+
 
         D3S_JQWidgets_Adapter.prototype._renderTable = function () {
 
             this.$container.jqxGrid(this.config);
         };
+
 
         D3S_JQWidgets_Adapter.prototype._initVariable = function () {
 
@@ -183,6 +197,7 @@ define([
             this.$data = this.model.data;
             this.$originalDatasource = [];
         };
+
 
         D3S_JQWidgets_Adapter.prototype._validateInput = function () {
 
@@ -234,7 +249,7 @@ define([
             return (Object.keys(this.errors).length === 0);
         };
 
-        //Utils
+
         D3S_JQWidgets_Adapter.prototype._getLabel = function (obj, attribute) {
 
             var label,
@@ -260,24 +275,25 @@ define([
 
         D3S_JQWidgets_Adapter.prototype._getLabelFromLabelDataType = function (obj) {
 
-            var label,keys;
+            var label, keys;
 
-                if (obj.hasOwnProperty(this.lang)) {
-                    label = obj[this.lang];
+            if (obj.hasOwnProperty(this.lang)) {
+                label = obj[this.lang];
+            } else {
+
+                keys = Object.keys(obj);
+
+                if (keys.length > 0) {
+                    label = obj[keys[0]];
                 } else {
-
-                    keys = Object.keys(obj);
-
-                    if (keys.length > 0) {
-                        label = obj[keys[0]];
-                    }else{
-                        label = null;
-                    }
+                    label = null;
+                }
 
             }
 
             return label;
         };
+
 
         D3S_JQWidgets_Adapter.prototype._createCode2LabelMap = function (column) {
 
@@ -320,6 +336,7 @@ define([
             return map;
         };
 
+
         D3S_JQWidgets_Adapter.prototype._getColumnBySubject = function (subject) {
 
             var id = this.aux.subject2id[subject],
@@ -338,6 +355,7 @@ define([
             return this.$columns.length > index ? this.$columns[index] : null;
         };
 
+
         D3S_JQWidgets_Adapter.prototype._getColumnIndexBySubject = function (subject) {
 
             _.each(this.$columns, function (column, i) {
@@ -349,9 +367,13 @@ define([
             return -1;
         };
 
-        D3S_JQWidgets_Adapter.prototype.destroy = function(){
-            this.$container.jqxGrid('destroy');
+
+        D3S_JQWidgets_Adapter.prototype.destroy = function () {
+
+            amplify.publish(e.DESTROY);
+            this.$container.jqxGrid('destroy', this);
         }
+
 
         return D3S_JQWidgets_Adapter;
     });
