@@ -1,7 +1,7 @@
 /*global define*/
 define([
         'jquery',
-        'fx-c-c/config/adapters/d3s_jqwidgets',
+        'fx-t-c/config/adapters/d3s_jqwidgets',
         'underscore',
         'jqwidgets',
         'moment',

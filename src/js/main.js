@@ -3,7 +3,8 @@ requirejs(['./paths'], function (paths) {
 
     requirejs.config(paths);
 
-    requirejs(['fx-c-c/start', 'amplify'], function (TableCreator) {
+    requirejs(['fx-t-c/start', 'amplify'], function (TableCreator) {
+
 
         var tableCreator = new TableCreator();
 
@@ -16,6 +17,13 @@ requirejs(['./paths'], function (paths) {
             tableCreator.render({
                 container: '.content',
                 model: model
+                /*
+                if you want to override the default configuration,
+                options: {
+                    sortable: true
+                }
+                */
+
             });
         })
 

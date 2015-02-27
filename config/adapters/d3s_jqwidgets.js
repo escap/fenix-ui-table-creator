@@ -10,6 +10,7 @@ define(function () {
         columnsresize: true,
         pagesize: 30,
         groupable:true,
-        keyboardnavigation: true
+        keyboardnavigation: true,
+        width: '100%'
     };
 });

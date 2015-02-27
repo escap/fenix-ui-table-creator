@@ -2,8 +2,8 @@
 define([
         'require',
         'jquery',
-        'fx-c-c/templates/base_template',
-        'fx-c-c/adapters/d3s_jqwidgets',
+        'fx-t-c/templates/base_template',
+        'fx-t-c/adapters/d3s_jqwidgets'
     ],
     function (RequireJS, $) {
 
@@ -44,12 +44,12 @@ define([
 
         TableCreator.prototype.getAdapterUrl = function () {
             //TODO add here adapter discovery logic
-            return this.adapterUrl ? this.adapterUrl : 'fx-c-c/adapters/d3s_jqwidgets';
+            return this.adapterUrl ? this.adapterUrl : 'fx-t-c/adapters/d3s_jqwidgets';
         };
 
         TableCreator.prototype.getTemplateUrl = function () {
             //TODO add here template discovery logic
-            return this.templateUrl ? this.templateUrl : 'fx-c-c/templates/base_template';
+            return this.templateUrl ? this.templateUrl : 'fx-t-c/templates/base_template';
         };
 
         TableCreator.prototype._validateInput = function () {
