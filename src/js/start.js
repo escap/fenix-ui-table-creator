@@ -64,5 +64,9 @@ define([
 
         }
 
+        TableCreator.prototype.applyEvent = function( event){
+            return this.adapter.applyEvent(event);
+        }
+
         return TableCreator;
     });

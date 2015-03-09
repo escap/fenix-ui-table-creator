@@ -153,6 +153,7 @@ define([
 
 
         D3S_JQWidgets_Adapter.prototype._onValidateDataSuccess = function (config) {
+            this.$gridRendered = true;
             this._createConfiguration(config);
             this._renderTable();
         };
@@ -183,6 +184,7 @@ define([
         D3S_JQWidgets_Adapter.prototype._renderTable = function () {
 
             this.$container.jqxGrid(this.config);
+
         };
 
 
@@ -372,6 +374,15 @@ define([
 
             amplify.publish(e.DESTROY);
             this.$container.jqxGrid('destroy', this);
+        }
+
+        D3S_JQWidgets_Adapter.prototype.applyEvent = function (event){
+
+            if(typeof this.$container!== 'undefined' && this.$gridRendered ) {
+                this.$container.jqxGrid(event);
+                return true;
+            }
+            console.error('it is not possible to apply the event: '+event);
         }
 
 
