@@ -13,8 +13,8 @@ requirejs(['./paths'], function (paths) {
             console.log(tableCreator.applyEvent('refresh'))
         })
 
-        $.get("http://faostat3.fao.org/d3s2/v2/msd/resources/uid/AFO_ProductionCapacities?dsd=true&full=true&order=time", function (model) {
-
+       // $.get("http://faostat3.fao.org/d3s2/v2/msd/resources/uid/AFO_ProductionCapacities?dsd=true&full=true&order=time", function (model) {
+        $.get("http://faostat3.fao.org/d3s2/v2/msd/resources/uid/CountrySTAT_fertilizer_demo?dsd=true&full=true&order=time", function (model) {
             tableCreator.render({
                 container: '.content',
                 model: model

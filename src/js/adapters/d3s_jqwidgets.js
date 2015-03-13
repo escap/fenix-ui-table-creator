@@ -4,8 +4,12 @@ define([
         'fx-t-c/config/adapters/d3s_jqwidgets',
         'underscore',
         'jqwidgets',
-        'moment',
-        'amplify'
+         'moment',
+        'amplify',
+        'jqxgrid.pager',
+        'jqxgrid.filter',
+        'jqxgrid.grouping',
+        'jqxmenu'
     ],
     function ($, baseConfig, _) {
 
