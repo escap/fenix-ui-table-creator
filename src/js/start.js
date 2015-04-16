@@ -18,11 +18,11 @@ define([
         TableCreator.prototype.render = function (config) {
 
             if (this._validateInput(config)) {
-                this.preloadResouces(config);
+                this.preloadResources(config);
             }
         };
 
-        TableCreator.prototype.preloadResouces = function ( config ) {
+        TableCreator.prototype.preloadResources = function ( config ) {
 
             var baseTemplate = this.getTemplateUrl(),
                 adapter =  this.getAdapterUrl(),
