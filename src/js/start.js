@@ -7,6 +7,8 @@ define([
     ],
     function (RequireJS, $) {
 
+        'use strict';
+
         var defaultOptions = {
             default: ''
         };
@@ -22,14 +24,14 @@ define([
             }
         };
 
-        TableCreator.prototype.preloadResources = function ( config ) {
+        TableCreator.prototype.preloadResources = function (config) {
 
             var baseTemplate = this.getTemplateUrl(),
-                adapter =  this.getAdapterUrl(),
+                adapter = this.getAdapterUrl(),
                 self = this;
 
             RequireJS([
-                 baseTemplate,
+                baseTemplate,
                 adapter
             ], function (Template, Adapter) {
 
@@ -38,7 +40,7 @@ define([
 
                 //currently both of them are sync fns
                 self.template.render(config);
-                 self.adapter.render(config);
+                self.adapter.render(config);
             });
         };
 
@@ -56,17 +58,21 @@ define([
             return true;
         };
 
-        TableCreator.prototype.destroy = function(){
+        TableCreator.prototype.destroy = function () {
 
-            if(this.template)this.template.destroy();
+            if (this.template) {
+                this.template.destroy();
+            }
 
-            if(this.adapter) this.adapter.destroy();
+            if (this.adapter) {
+                this.adapter.destroy();
+            }
 
-        }
+        };
 
-        TableCreator.prototype.applyEvent = function( event){
+        TableCreator.prototype.applyEvent = function (event) {
             return this.adapter.applyEvent(event);
-        }
+        };
 
         return TableCreator;
     });
