@@ -117,7 +117,6 @@ define([
 
             for (var i = 0; i < this.$data.length; i++) {
                 var row = {};
-
                 for (var j = 0; j < titlesLength; j++) {
                     // if data is not a number is a label
                     if (this.aux.id2Datatypes[j] !== 'number' && this.aux.id2Datatypes[j] !== 'text' && this.aux.id2Datatypes[j] !== 'boolean' && this.aux.id2Datatypes[j] !== 'percentage' && this.aux.id2Datatypes[j] !== 'enumeration') {
@@ -132,7 +131,7 @@ define([
                     if (i === 0) {
                         var column = {};
                         column.text = this.$titles[j];
-                        column.datafield = this.$titles[j];
+                        column.datafield = this.aux.ids[j];
                         this.dataSource.columns.push(column);
                     }
                 }
