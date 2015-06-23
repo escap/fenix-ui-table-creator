@@ -186,7 +186,7 @@ define([
             this.$dsd = this.$metadata.dsd;
             this.$columns = this.$dsd.columns;
             this.$titles = [];
-            this.$data = this.model.data;
+            this.$data = this.model.data || [];
             this.$originalDatasource = [];
         };
 
@@ -233,10 +233,10 @@ define([
             }
 
             //Data
-            if (!this.model.hasOwnProperty("data")) {
+           /* if (!this.model.hasOwnProperty("data")) {
                 this.errors.data = "Model does not container 'data' attribute.";
             }
-
+*/
             return (Object.keys(this.errors).length === 0);
         };
 
