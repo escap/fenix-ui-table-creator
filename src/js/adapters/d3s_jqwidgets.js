@@ -54,6 +54,9 @@ define([
             $.extend(true, this, config);
 
             if (this._validateInput() === true) {
+                if(config.d3p){
+                    this._prepareHiddenColumnsForD3P();
+                }
                 this._initVariable();
                 this._prepareData();
                 if (this._validateData() === true) {
@@ -120,19 +123,28 @@ define([
                 for (var j = 0; j < titlesLength; j++) {
                     // if data is not a number is a label
                     if (this.aux.id2Datatypes[j] !== 'number' && this.aux.id2Datatypes[j] !== 'text' && this.aux.id2Datatypes[j] !== 'boolean' && this.aux.id2Datatypes[j] !== 'percentage' && this.aux.id2Datatypes[j] !== 'enumeration') {
-                        row[this.$titles[j]] =
+                        row[this.aux.ids[j]] =
                             (this.$data[i][j]) ?
                                 this.aux.code2label[this.aux.index2id[j]][this.$data[i][j]] : null;
                     } else {
-                        row[this.$titles[j]] =
+                        row[this.aux.ids[j]] =
                             (this.$data[i][j]) ?
                                 this.$data[i][j] : null;
                     }
                     if (i === 0) {
                         var column = {};
                         column.text = this.$titles[j];
-                        column.datafield = this.aux.ids[j];
-                        this.dataSource.columns.push(column);
+                        column.datafield = this.aux.ids[j]
+
+
+
+                        if(this.$hideColumns[column.datafield] !== true){
+                            this.dataSource.columns.push(column);
+
+                        }
+/*
+                        column.hidden = true;
+*/
                     }
                 }
                 this.$originalDatasource[i] = row;
@@ -174,7 +186,10 @@ define([
 
         D3S_JQWidgets_Adapter.prototype._renderTable = function () {
 
+            var self = this;
+
             this.$container.jqxGrid(this.config);
+
 
         };
 
@@ -367,6 +382,27 @@ define([
             }
             console.error('it is not possible to apply the event: ' + event);
         };
+
+        D3S_JQWidgets_Adapter.prototype._prepareHiddenColumnsForD3P = function() {
+
+           this.$hideColumns = {};
+           var tempDSDColumns = this.model.metadata.dsd.columns;
+
+            for(var i = 0, length = tempDSDColumns.length; i<length; i++) {
+                if(tempDSDColumns[i].dataType == "code"){
+                    this.$hideColumns[ tempDSDColumns[i].id] = true;
+                }
+            }
+        };
+
+        D3S_JQWidgets_Adapter.prototype._lookForD3PLabelColumnIndex = function(idToFind) {
+            var tempDSDColumns = this.model.metadata.dsd.columns;
+            for(var i = 0, length = tempDSDColumns.length; i<length; i++) {
+                // -3 for _LN
+                if(idToFind == tempDSDColumns[i].id.substr(0,tempDSDColumns[i].id.length -3))
+                    return i;
+            }
+        }
 
         return D3S_JQWidgets_Adapter;
     });
