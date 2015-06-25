@@ -9,7 +9,7 @@ define(function () {
         autorowheight: true,
         columnsresize: true,
         pagesize: 30,
-        groupable:true,
+        //groupable:true,
         keyboardnavigation: true,
         width: '100%'
     };
