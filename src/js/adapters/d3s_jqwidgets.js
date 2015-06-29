@@ -30,6 +30,8 @@ define([
 
             translation: {},
 
+            codelist: {},
+
             aux: {
                 ids: [],
                 subjects: [],
@@ -39,7 +41,8 @@ define([
                 subject2id: {},
                 id2subject: {},
                 nameIndexes: [],
-                id2Datatypes: {}
+                id2Datatypes: {},
+                index2Datatypes:{}
             }
         }, e = {
             DESTROY: 'fx.component.table.destroy',
@@ -54,9 +57,9 @@ define([
             $.extend(true, this, config);
 
             if (this._validateInput() === true) {
-                if(config.d3p){
+                /*if(config.d3p){
                     this._prepareHiddenColumnsForD3P();
-                }
+                }*/
                 this._initVariable();
                 this._prepareData();
                 if (this._validateData() === true) {
@@ -73,16 +76,14 @@ define([
 
         D3S_JQWidgets_Adapter.prototype._prepareData = function () {
 
+            console.log( this.$columns)
+            debugger;
+
             this.$columns.forEach(_.bind(function (column, index) {
 
                 if (column.hasOwnProperty('id')) {
-                    this.aux.id2index[column.id] = index;
-                    this.aux.index2id[index] = column.id;
-                    this.aux.ids.push(column.id);
+                    this._setIDVariableAndcheckIfLabelColumn(column.id, index);
 
-                    if (!column.hasOwnProperty('subject')) {
-                        column.subject = column.id;
-                    }
 
                     if (column.hasOwnProperty('subject')) {
                         this.aux.subject2id[column.subject] = column.id;
@@ -96,7 +97,8 @@ define([
                     }
 
                     if (column.hasOwnProperty('dataType')) {
-                        this.aux.id2Datatypes[index] = column.dataType;
+                        this.aux.index2Datatypes[index] = column.dataType;
+                        this.aux.id2Datatypes[column.id] = column.datatype;
                     }
                 }
 
@@ -114,22 +116,50 @@ define([
             }
         };
 
+
+
+        D3S_JQWidgets_Adapter.prototype._setIDVariableAndcheckIfLabelColumn  =function(idColumn, indexColumn) {
+
+            this._checkAndSetIfLabelColumn(idColumn, indexColumn);
+            this.aux.id2index[idColumn] = indexColumn;
+            this.aux.index2id[indexColumn] = idColumn;
+            this.aux.ids.push(idColumn);
+        };
+        
+        
+        D3S_JQWidgets_Adapter.prototype._checkAndSetIfLabelColumn = function(idLabel, indexLabel) {
+
+            if( idLabel && idLabel!= null && idLabel.length >3) {
+                
+                var possibleIDCodeColumn =   idLabel.substring(0,idLabel.length-(1+3));
+                
+                if( this.aux.id2index[possibleIDCodeColumn] ===true) {
+                    
+                    if(!this.aux.indexCodeColumn2indexLabelColumn) {
+                        this.aux.indexCodeColumn2indexLabelColumn = {};
+                    }
+                   
+                    this.aux.indexCodeColumn2indexLabelColumn[this.aux.id2index[possibleIDCodeColumn]] = indexLabel;
+                }
+            }
+        }
+
         D3S_JQWidgets_Adapter.prototype._prepareDataForTableType = function () {
 
             var titlesLength = this.$titles.length;
 
-            for (var i = 0; i < this.$data.length; i++) {
+            for (var i = 0; i < this.$originalData.length; i++) {
                 var row = {};
                 for (var j = 0; j < titlesLength; j++) {
                     // if data is not a number is a label
-                    if (this.aux.id2Datatypes[j] !== 'number' && this.aux.id2Datatypes[j] !== 'text' && this.aux.id2Datatypes[j] !== 'boolean' && this.aux.id2Datatypes[j] !== 'percentage' && this.aux.id2Datatypes[j] !== 'enumeration') {
+                    if (this.aux.index2Datatypes[j] !== 'number' && this.aux.index2Datatypes[j] !== 'text' && this.aux.index2Datatypes[j] !== 'boolean' && this.aux.index2Datatypes[j] !== 'percentage' && this.aux.index2Datatypes[j] !== 'enumeration') {
                         row[this.aux.ids[j]] =
-                            (this.$data[i][j]) ?
-                                this.aux.code2label[this.aux.index2id[j]][this.$data[i][j]] : null;
+                            (this.$originalData[i][j]) ?
+                                this.aux.code2label[this.aux.index2id[j]][this.$originalData[i][j]] : null;
                     } else {
                         row[this.aux.ids[j]] =
-                            (this.$data[i][j]) ?
-                                this.$data[i][j] : null;
+                            (this.$originalData[i][j]) ?
+                                this.$originalData[i][j] : null;
                     }
                     if (i === 0) {
                         var column = {};
@@ -147,10 +177,10 @@ define([
 */
                     }
                 }
-                this.$originalDatasource[i] = row;
+                this.$visualizationData[i] = row;
             }
 
-            this.dataSource.source = new $.jqx.dataAdapter({localdata: this.$originalDatasource, datatype: "array"});
+            this.dataSource.source = new $.jqx.dataAdapter({localdata: this.$visualizationData, datatype: "array"});
         };
 
         D3S_JQWidgets_Adapter.prototype._validateData = function () {
@@ -201,8 +231,9 @@ define([
             this.$dsd = this.$metadata.dsd;
             this.$columns = this.$dsd.columns;
             this.$titles = [];
-            this.$data = this.model.data || [];
-            this.$originalDatasource = [];
+            this.$originalData = this.model.data || [];
+            this.$visualizationData = [];
+            this.$codelist = ($.isEmptyObject(this.codelist))? null: this.codelist;
         };
 
         D3S_JQWidgets_Adapter.prototype._validateInput = function () {
