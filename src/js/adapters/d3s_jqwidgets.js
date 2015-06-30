@@ -222,7 +222,11 @@ define([
         D3S_JQWidgets_Adapter.prototype._getLabelFromDistinct = function (codesDistinct, codeToSearch) {
             for (var i = 0, length = codesDistinct.length; i < length; i++) {
                 if (codesDistinct[i].code === codeToSearch) {
-                    return codesDistinct[i].label[this.lang];
+                    if(codesDistinct[i].label) {
+                        return codesDistinct[i].label[this.lang];
+                    }else{
+                        return codesDistinct[i].code;
+                    }
                 }
             }
         };

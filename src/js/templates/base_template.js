@@ -21,7 +21,7 @@ define([
                 this._injectTemplate();
             } else {
                 console.error(this.errors);
-                throw new Error("FENIX Chart creator has not a valid configuration");
+                throw new Error("FENIX Table creator has not a valid configuration");
             }
         };
 
