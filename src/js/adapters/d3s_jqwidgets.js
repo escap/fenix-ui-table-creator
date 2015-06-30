@@ -28,6 +28,8 @@ define([
                 columns: []
             },
 
+            codeVisualization: "#label|$label ~#code| $(code) ~|",
+
             translation: {},
 
             codelist: {},
@@ -196,8 +198,57 @@ define([
 
         D3S_JQWidgets_Adapter.prototype._getVisualizationLabel = function (code) {
             //TODO: create langauge expression to fill it
-            return this.aux.code2label[code];
+            return this.evaluateRegularExpression(code, this.aux.code2label[code]);
         };
+
+
+        D3S_JQWidgets_Adapter.prototype.evaluateRegularExpression = function (code, label) {
+            var conditionRegExpression = /(#(\w+)(\|))/;
+            var valuesRegExpression = /(((\W)|(\s))*(\$\w+)((\W)|(\s))*(\~))/;
+            var onlyValue = /(\$\w+)/;
+            var result = "";
+
+            var expression = this.codeVisualization;
+
+            while (expression != "" && expression != "|") {
+                debugger;
+                var matchedExp = expression.match(conditionRegExpression);
+                if (matchedExp !== null) {
+                    var firstCondition = matchedExp[0]
+                    expression = expression.replace(conditionRegExpression, "")
+                    firstCondition = firstCondition.slice(0, -1);
+                    if (firstCondition.substring(1) == "label") {
+                        if (label && label != null) {
+                            var secondCondition = expression.match(valuesRegExpression)[0];
+                            expression = expression.replace(valuesRegExpression, "")
+                            secondCondition = secondCondition.slice(0, -1);
+                            var stringAppend = secondCondition.replace(onlyValue, function (match) {
+                                var returnedValue;
+                                returnedValue = (match.substring(1) == "code") ? code : null;
+                                return returnedValue;
+                            })
+                            result += stringAppend;
+                        }
+                        else {
+                            if (firstCondition.substring(1) == "code") {
+                                if (code && code != null) {
+                                    var secondCondition = expression.match(valuesRegExpression)[0];
+                                    expression = expression.replace(valuesRegExpression, "")
+                                    secondCondition = secondCondition.slice(0, -1);
+                                    var stringAppend = secondCondition.replace(onlyValue, function (match) {
+                                        var returnedValue;
+                                        returnedValue = (match.substring(1) == "label") ? label : null;
+                                        return returnedValue;
+                                    })
+                                    result += stringAppend;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            return result;
+        }
 
 
         D3S_JQWidgets_Adapter.prototype._createCode2LabelMap = function (rowData, indexRow) {
@@ -208,10 +259,15 @@ define([
             else if (this._isLabelIntoDistinct(indexRow)) {
                 if (!this.aux.code2label[rowData[indexRow]]) {
                     this.aux.code2label[rowData[indexRow]] =
-                        this._getLabelFromDistinct(this.$columns[indexRow].values.codes[0].codes, rowData[indexRow]);
+                        this._getLabelFromDistinctOrDomain(this.$columns[indexRow].values.codes[0].codes, rowData[indexRow]);
                 }
 
             } else if (this._isLabelIntoDomain(indexRow)) {
+
+                if (!this.aux.code2label[rowData[indexRow]]) {
+                    this.aux.code2label[rowData[indexRow]] =
+                        this._getLabelFromDistinctOrDomain(this.$columns[indexRow].domain.codes[0].codes, rowData[indexRow]);
+                }
 
             } else {
                 this.aux.code2label[rowData[indexRow]] = rowData[indexRow];
@@ -219,13 +275,13 @@ define([
         };
 
 
-        D3S_JQWidgets_Adapter.prototype._getLabelFromDistinct = function (codesDistinct, codeToSearch) {
-            for (var i = 0, length = codesDistinct.length; i < length; i++) {
-                if (codesDistinct[i].code === codeToSearch) {
-                    if(codesDistinct[i].label) {
-                        return codesDistinct[i].label[this.lang];
-                    }else{
-                        return codesDistinct[i].code;
+        D3S_JQWidgets_Adapter.prototype._getLabelFromDistinctOrDomain = function (codes, codeToSearch) {
+            for (var i = 0, length = codes.length; i < length; i++) {
+                if (codes[i].code === codeToSearch) {
+                    if (codes[i].label) {
+                        return codes[i].label[this.lang];
+                    } else {
+                        return codes[i].code;
                     }
                 }
             }
@@ -233,7 +289,7 @@ define([
 
 
         D3S_JQWidgets_Adapter.prototype._isLabelIntoDomain = function (indexCodeRow) {
-            return false;
+            return this.$columns[indexCodeRow].domain.codes[0].codes[0].label;
         };
 
 
@@ -321,7 +377,6 @@ define([
         D3S_JQWidgets_Adapter.prototype._initVariable = function () {
 
             this.$container = $(this.container).find(this.s.CONTENT);
-
             this.$metadata = this.model.metadata;
             this.$dsd = this.$metadata.dsd;
             this.$columns = this.$dsd.columns;
@@ -383,27 +438,27 @@ define([
         };
 
 
-        D3S_JQWidgets_Adapter.prototype._getLabel = function (obj, attribute) {
+        /* D3S_JQWidgets_Adapter.prototype._getLabel = function (obj, attribute) {
 
-            var label,
-                keys;
+         var label,
+         keys;
 
-            if (obj.hasOwnProperty(attribute) && obj.title !== null) {
+         if (obj.hasOwnProperty(attribute) && obj.title !== null) {
 
-                if (obj[attribute].hasOwnProperty(this.lang)) {
-                    label = obj[attribute][this.lang];
-                } else {
+         if (obj[attribute].hasOwnProperty(this.lang)) {
+         label = obj[attribute][this.lang];
+         } else {
 
-                    keys = Object.keys(obj[attribute]);
+         keys = Object.keys(obj[attribute]);
 
-                    if (keys.length > 0) {
-                        label = obj[attribute][keys[0]];
-                    }
-                }
-            }
+         if (keys.length > 0) {
+         label = obj[attribute][keys[0]];
+         }
+         }
+         }
 
-            return label;
-        };
+         return label;
+         };*/
 
 
         D3S_JQWidgets_Adapter.prototype._getLabelFromLabelDataType = function (obj) {
@@ -428,46 +483,46 @@ define([
         };
 
 
-        D3S_JQWidgets_Adapter.prototype._createCode2LabelMapOLD = function (column) {
+        /* D3S_JQWidgets_Adapter.prototype._createCode2LabelMapOLD = function (column) {
 
-            var map = {},
-                values;
+         var map = {},
+         values;
 
-            switch (column.dataType) {
-                case 'code' :
-                    values = _.each(column.values.codes[0].codes, function (v) {
-                        map[v.code] = this._getLabel(v, 'label');
-                    }, this);
-                    break;
+         switch (column.dataType) {
+         case 'code' :
+         values = _.each(column.values.codes[0].codes, function (v) {
+         map[v.code] = this._getLabel(v, 'label');
+         }, this);
+         break;
 
-                case 'customCode' :
-                    values = _.each(column.values.codes[0].codes, function (v) {
-                        map[v.code] = this._getLabel(v, 'label');
-                    }, this);
-                    break;
+         case 'customCode' :
+         values = _.each(column.values.codes[0].codes, function (v) {
+         map[v.code] = this._getLabel(v, 'label');
+         }, this);
+         break;
 
-                case 'year' :
-                case 'month':
-                case 'date' :
-                case 'time' :
-                    values = _.each(column.values.timeList, function (v) {
-                        map[v] = v;
-                    }, this);
-                    break;
-
-
-                case 'label':
-                    values = _.each(column.values.timeList, function (v) {
-                        map[v] = this._getLabelFromLabelDataType(v);
-                    }, this);
-
-                    break;
-
-            }
+         case 'year' :
+         case 'month':
+         case 'date' :
+         case 'time' :
+         values = _.each(column.values.timeList, function (v) {
+         map[v] = v;
+         }, this);
+         break;
 
 
-            return map;
-        };
+         case 'label':
+         values = _.each(column.values.timeList, function (v) {
+         map[v] = this._getLabelFromLabelDataType(v);
+         }, this);
+
+         break;
+
+         }
+
+
+         return map;
+         };*/
 
 
         D3S_JQWidgets_Adapter.prototype._getColumnBySubject = function (subject) {
