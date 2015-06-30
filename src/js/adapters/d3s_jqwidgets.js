@@ -198,7 +198,10 @@ define([
 
         D3S_JQWidgets_Adapter.prototype._getVisualizationLabel = function (code) {
             //TODO: create langauge expression to fill it
+/*
             return this.evaluateRegularExpression(code, this.aux.code2label[code]);
+*/
+            return this.aux.code2label[code];
         };
 
 
