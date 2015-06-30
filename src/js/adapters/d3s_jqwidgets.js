@@ -42,7 +42,7 @@ define([
                 id2subject: {},
                 nameIndexes: [],
                 id2Datatypes: {},
-                index2Datatypes:{}
+                index2Datatypes: {}
             }
         }, e = {
             DESTROY: 'fx.component.table.destroy',
@@ -51,17 +51,18 @@ define([
 
         function D3S_JQWidgets_Adapter() {
             $.extend(true, this, defaultOptions);
-        }
+        };
+
 
         D3S_JQWidgets_Adapter.prototype.render = function (config) {
             $.extend(true, this, config);
 
             if (this._validateInput() === true) {
                 /*if(config.d3p){
-                    this._prepareHiddenColumnsForD3P();
-                }*/
+                 this._prepareHiddenColumnsForD3P();
+                 }*/
                 this._initVariable();
-                this._prepareData();
+                this._prepareDSDData();
                 if (this._validateData() === true) {
                     this._onValidateDataSuccess(config);
                 } else {
@@ -69,119 +70,206 @@ define([
                 }
             } else {
                 console.error(this.errors);
-                throw new Error("FENIX Chart creator has not a valid configuration");
+                throw new Error("FENIX Table creator has not a valid configuration");
             }
         };
 
 
-        D3S_JQWidgets_Adapter.prototype._prepareData = function () {
+        D3S_JQWidgets_Adapter.prototype._prepareDSDData = function () {
 
-            console.log( this.$columns)
-            debugger;
+            console.log(this.$columns)
 
             this.$columns.forEach(_.bind(function (column, index) {
 
                 if (column.hasOwnProperty('id')) {
-                    this._setIDVariableAndcheckIfLabelColumn(column.id, index);
 
+                    if (this._isARightIDColumn(column.id, index)) {
 
-                    if (column.hasOwnProperty('subject')) {
-                        this.aux.subject2id[column.subject] = column.id;
-                        this.aux.id2subject[column.id] = column.subject;
+                        if (column.hasOwnProperty('subject')) {
+                            this.aux.subject2id[column.subject] = column.id;
+                            this.aux.id2subject[column.id] = column.subject;
 
-                        this.aux.subjects.push(column.subject);
+                            this.aux.subjects.push(column.subject);
 
-                        if (column.subject === "value") {
-                            this.columnValueIndex = index;
+                            if (column.subject === 'value') {
+                                this.columnValueIndex = index;
+                            }
+
+                            if (column.hasOwnProperty('dataType')) {
+                                this.aux.index2Datatypes[index] = column.dataType;
+                                this.aux.id2Datatypes[column.id] = column.datatype;
+                            } else {
+                                throw new Error("DSD is not correct: it doesn't have datatype on column: " + index);
+                            }
+
+                            this.$titles.push(column.title[defaultOptions.lang]);
                         }
                     }
-
-                    if (column.hasOwnProperty('dataType')) {
-                        this.aux.index2Datatypes[index] = column.dataType;
-                        this.aux.id2Datatypes[column.id] = column.datatype;
-                    }
                 }
-
-                if (column.hasOwnProperty('values')) {
-                    this.aux.code2label[column.id] = this._createCode2LabelMap(column);
+                else {
+                    throw new Error("DSD is not correct: it doesn't have id on column: " + index);
                 }
-                this.$titles.push(column.title[defaultOptions.lang]);
-
-                this.aux.nameIndexes.push(index);
-
             }, this));
+            this._prepareVisualizationData();
 
-            if (this.columnValueIndex) {
-                this._prepareDataForTableType();
+        };
+
+
+        D3S_JQWidgets_Adapter.prototype._isARightIDColumn = function (idColumn, indexColumn) {
+
+            var isArightColumn;
+            if (!(this._isAVirtualColumn(idColumn, indexColumn))) {
+                isArightColumn = true;
+                this.aux.id2index[idColumn] = indexColumn;
+                this.aux.index2id[indexColumn] = idColumn;
+                this.aux.ids.push(idColumn);
+            } else {
+                isArightColumn = false;
             }
+            return isArightColumn;
         };
 
 
+        D3S_JQWidgets_Adapter.prototype._isAVirtualColumn = function (idLabel, indexLabel) {
 
-        D3S_JQWidgets_Adapter.prototype._setIDVariableAndcheckIfLabelColumn  =function(idColumn, indexColumn) {
+            var result;
 
-            this._checkAndSetIfLabelColumn(idColumn, indexColumn);
-            this.aux.id2index[idColumn] = indexColumn;
-            this.aux.index2id[indexColumn] = idColumn;
-            this.aux.ids.push(idColumn);
-        };
-        
-        
-        D3S_JQWidgets_Adapter.prototype._checkAndSetIfLabelColumn = function(idLabel, indexLabel) {
+            if (idLabel && idLabel != null && idLabel.length > 3) {
 
-            if( idLabel && idLabel!= null && idLabel.length >3) {
-                
-                var possibleIDCodeColumn =   idLabel.substring(0,idLabel.length-(1+3));
-                
-                if( this.aux.id2index[possibleIDCodeColumn] ===true) {
-                    
-                    if(!this.aux.indexCodeColumn2indexLabelColumn) {
-                        this.aux.indexCodeColumn2indexLabelColumn = {};
-                    }
-                   
-                    this.aux.indexCodeColumn2indexLabelColumn[this.aux.id2index[possibleIDCodeColumn]] = indexLabel;
+                var idOriginalColumn = idLabel.substring(0, idLabel.length - 3);
+
+                if (this.aux.id2index[idOriginalColumn]) {
+                    result = true;
+                    this._setVariablesForVirtualColumn(idOriginalColumn, indexLabel);
+                } else {
+                    result = false;
                 }
+            } else {
+                result = false;
             }
-        }
+            return result;
+        };
 
-        D3S_JQWidgets_Adapter.prototype._prepareDataForTableType = function () {
 
-            var titlesLength = this.$titles.length;
+        D3S_JQWidgets_Adapter.prototype._setVariablesForVirtualColumn = function (idOriginalColumn, indexVirtualColumn) {
 
+            if (!this.aux.indexCodeColumn2indexVirtualColumn) {
+                this.aux.indexCodeColumn2indexVirtualColumn = {};
+            }
+            this.aux.indexCodeColumn2indexVirtualColumn[this.aux.id2index[idOriginalColumn]] = indexVirtualColumn;
+        };
+
+
+        D3S_JQWidgets_Adapter.prototype._prepareVisualizationData = function () {
+
+            var rowIndexes = Object.keys(this.aux.index2Datatypes);
+
+            var datatypeTmp;
             for (var i = 0; i < this.$originalData.length; i++) {
+                // fill each row
                 var row = {};
-                for (var j = 0; j < titlesLength; j++) {
-                    // if data is not a number is a label
-                    if (this.aux.index2Datatypes[j] !== 'number' && this.aux.index2Datatypes[j] !== 'text' && this.aux.index2Datatypes[j] !== 'boolean' && this.aux.index2Datatypes[j] !== 'percentage' && this.aux.index2Datatypes[j] !== 'enumeration') {
+                var trueIndex = null;
+                for (var j = 0, length = rowIndexes.length; j < length; j++) {
+
+                    trueIndex = rowIndexes[j]; //there could be different false virtual columns in different positions
+                    datatypeTmp = this.aux.index2Datatypes[trueIndex];
+
+                    if (this._isADatatypeWithoutConversion(datatypeTmp)) {
                         row[this.aux.ids[j]] =
-                            (this.$originalData[i][j]) ?
-                                this.aux.code2label[this.aux.index2id[j]][this.$originalData[i][j]] : null;
+                            (this.$originalData[i][trueIndex]) ? this.$originalData[i][trueIndex] : null;
+
+                    } else if (this._isADatatypeCodeColumn(datatypeTmp)) {
+                        this._createCode2LabelMap(this.$originalData[i], trueIndex);
+                        row[this.aux.ids[j]] = this._getVisualizationLabel(this.$originalData[i][trueIndex], trueIndex);
                     } else {
+                        //TODO: handle time and label
                         row[this.aux.ids[j]] =
-                            (this.$originalData[i][j]) ?
-                                this.$originalData[i][j] : null;
+                            (this.$originalData[i][trueIndex]) ? this.$originalData[i][trueIndex] : null;
                     }
-                    if (i === 0) {
-                        var column = {};
-                        column.text = this.$titles[j];
-                        column.datafield = this.aux.ids[j]
-
-
-
-                        if(this.$hideColumns[column.datafield] !== true){
-                            this.dataSource.columns.push(column);
-
-                        }
-/*
-                        column.hidden = true;
-*/
-                    }
+                    this._handleColumnsForJQwidgets(i, j);
                 }
                 this.$visualizationData[i] = row;
             }
+            this._setDataForJQXGrid();
+        };
 
+
+        D3S_JQWidgets_Adapter.prototype._getVisualizationLabel = function (code) {
+            //TODO: create langauge expression to fill it
+            return this.aux.code2label[code];
+        };
+
+
+        D3S_JQWidgets_Adapter.prototype._createCode2LabelMap = function (rowData, indexRow) {
+
+            if (this._isLabelIntoVirtualColumn()) {
+                this.aux.code2label[rowData[indexRow]] = rowData[this.aux.indexCodeColumn2indexVirtualColumn[indexRow]];
+            }
+            else if (this._isLabelIntoDistinct(indexRow)) {
+                if (!this.aux.code2label[rowData[indexRow]]) {
+                    this.aux.code2label[rowData[indexRow]] =
+                        this._getLabelFromDistinct(this.$columns[indexRow].values.codes[0].codes, rowData[indexRow]);
+                }
+
+            } else if (this._isLabelIntoDomain(indexRow)) {
+
+            } else {
+                this.aux.code2label[rowData[indexRow]] = rowData[indexRow];
+            }
+        };
+
+
+        D3S_JQWidgets_Adapter.prototype._getLabelFromDistinct = function (codesDistinct, codeToSearch) {
+            for (var i = 0, length = codesDistinct.length; i < length; i++) {
+                if (codesDistinct[i].code === codeToSearch) {
+                    return codesDistinct[i].label[this.lang];
+                }
+            }
+        };
+
+
+        D3S_JQWidgets_Adapter.prototype._isLabelIntoDomain = function (indexCodeRow) {
+            return false;
+        };
+
+
+        D3S_JQWidgets_Adapter.prototype._isLabelIntoVirtualColumn = function () {
+            return this.aux.indexCodeColumn2indexVirtualColumn;
+        };
+
+
+        D3S_JQWidgets_Adapter.prototype._isLabelIntoDistinct = function (indexCodeRow) {
+            return this.$columns[indexCodeRow].values.codes[0].codes[0].label;
+        };
+
+
+        D3S_JQWidgets_Adapter.prototype._isADatatypeCodeColumn = function (datatype) {
+            return (datatype === 'code' || datatype === 'customCode')
+        };
+
+
+        D3S_JQWidgets_Adapter.prototype._setDataForJQXGrid = function () {
             this.dataSource.source = new $.jqx.dataAdapter({localdata: this.$visualizationData, datatype: "array"});
         };
+
+
+        D3S_JQWidgets_Adapter.prototype._handleColumnsForJQwidgets = function (indexRow, indexColumn) {
+            if (indexRow === 0) {
+                var column = {};
+                column.text = this.$titles[indexColumn];
+                column.datafield = this.aux.ids[indexColumn]
+                this.dataSource.columns.push(column);
+            }
+        };
+
+
+        D3S_JQWidgets_Adapter.prototype._isADatatypeWithoutConversion = function (datatype) {
+
+            return (datatype === 'number'
+            || datatype === 'text' || datatype === 'boolean'
+            || datatype === 'percentage' || datatype === 'enumeration')
+        };
+
 
         D3S_JQWidgets_Adapter.prototype._validateData = function () {
 
@@ -190,20 +278,23 @@ define([
             return (Object.keys(this.errors).length === 0);
         };
 
+
         D3S_JQWidgets_Adapter.prototype._onValidateDataSuccess = function (config) {
             this.$gridRendered = true;
             this._createConfiguration(config);
             this._renderTable();
         };
 
+
         D3S_JQWidgets_Adapter.prototype._showConfigurationForm = function () {
             window.alert("FORM");
         };
 
+
         D3S_JQWidgets_Adapter.prototype._onValidateDataError = function () {
             this._showConfigurationForm();
-
         };
+
 
         D3S_JQWidgets_Adapter.prototype._createConfiguration = function (config) {
 
@@ -214,14 +305,14 @@ define([
             };
         };
 
+
         D3S_JQWidgets_Adapter.prototype._renderTable = function () {
 
             var self = this;
 
             this.$container.jqxGrid(this.config);
-
-
         };
+
 
         D3S_JQWidgets_Adapter.prototype._initVariable = function () {
 
@@ -233,8 +324,9 @@ define([
             this.$titles = [];
             this.$originalData = this.model.data || [];
             this.$visualizationData = [];
-            this.$codelist = ($.isEmptyObject(this.codelist))? null: this.codelist;
+            this.$codelist = ($.isEmptyObject(this.codelist)) ? null : this.codelist;
         };
+
 
         D3S_JQWidgets_Adapter.prototype._validateInput = function () {
 
@@ -279,12 +371,13 @@ define([
             }
 
             //Data
-           /* if (!this.model.hasOwnProperty("data")) {
-                this.errors.data = "Model does not container 'data' attribute.";
-            }
-*/
+            /* if (!this.model.hasOwnProperty("data")) {
+             this.errors.data = "Model does not container 'data' attribute.";
+             }
+             */
             return (Object.keys(this.errors).length === 0);
         };
+
 
         D3S_JQWidgets_Adapter.prototype._getLabel = function (obj, attribute) {
 
@@ -308,6 +401,7 @@ define([
             return label;
         };
 
+
         D3S_JQWidgets_Adapter.prototype._getLabelFromLabelDataType = function (obj) {
 
             var label, keys;
@@ -329,7 +423,8 @@ define([
             return label;
         };
 
-        D3S_JQWidgets_Adapter.prototype._createCode2LabelMap = function (column) {
+
+        D3S_JQWidgets_Adapter.prototype._createCode2LabelMapOLD = function (column) {
 
             var map = {},
                 values;
@@ -370,6 +465,7 @@ define([
             return map;
         };
 
+
         D3S_JQWidgets_Adapter.prototype._getColumnBySubject = function (subject) {
 
             var id = this.aux.subject2id[subject],
@@ -388,6 +484,7 @@ define([
             return this.$columns.length > index ? this.$columns[index] : null;
         };
 
+
         D3S_JQWidgets_Adapter.prototype._getColumnIndexBySubject = function (subject) {
 
             _.each(this.$columns, function (column, i) {
@@ -399,11 +496,13 @@ define([
             return -1;
         };
 
+
         D3S_JQWidgets_Adapter.prototype.destroy = function () {
 
             amplify.publish(e.DESTROY);
             this.$container.jqxGrid('destroy', this);
         };
+
 
         D3S_JQWidgets_Adapter.prototype.applyEvent = function (event) {
 
@@ -414,26 +513,6 @@ define([
             console.error('it is not possible to apply the event: ' + event);
         };
 
-        D3S_JQWidgets_Adapter.prototype._prepareHiddenColumnsForD3P = function() {
-
-           this.$hideColumns = {};
-           var tempDSDColumns = this.model.metadata.dsd.columns;
-
-            for(var i = 0, length = tempDSDColumns.length; i<length; i++) {
-                if(tempDSDColumns[i].dataType == "code"){
-                    this.$hideColumns[ tempDSDColumns[i].id] = true;
-                }
-            }
-        };
-
-        D3S_JQWidgets_Adapter.prototype._lookForD3PLabelColumnIndex = function(idToFind) {
-            var tempDSDColumns = this.model.metadata.dsd.columns;
-            for(var i = 0, length = tempDSDColumns.length; i<length; i++) {
-                // -3 for _LN
-                if(idToFind == tempDSDColumns[i].id.substr(0,tempDSDColumns[i].id.length -3))
-                    return i;
-            }
-        }
 
         return D3S_JQWidgets_Adapter;
     });

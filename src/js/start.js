@@ -74,5 +74,9 @@ define([
             return this.adapter.applyEvent(event);
         };
 
+        TableCreator.prototype.setCodelist = function(callback) {
+            // TODO
+        }
+
         return TableCreator;
     });
