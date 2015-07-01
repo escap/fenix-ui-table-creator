@@ -3,6 +3,7 @@ define([
         'jquery',
         'fx-t-c/config/adapters/d3s_jqwidgets',
         'underscore',
+        'fx-t-c/adapters/d3sCodelistAdapter',
         'jqwidgets',
         'moment',
         'amplify',
@@ -11,7 +12,7 @@ define([
         'jqxgrid.grouping',
         'jqxmenu'
     ],
-    function ($, baseConfig, _) {
+    function ($, baseConfig, _, adapterCodelist) {
 
         'use strict';
 
@@ -193,12 +194,8 @@ define([
         };
 
 
-        D3S_JQWidgets_Adapter.prototype._getVisualizationLabel = function (code) {
-            //TODO: create langauge expression to fill it
-
-            return this._convertLabelCodeInDefinedFormat(code, this.aux.code2label[code], this.codeVisualization);
-
-            return this.aux.code2label[code];
+        D3S_JQWidgets_Adapter.prototype._getVisualizationLabel = function (code,trueIndex) {
+            return this._convertLabelCodeInDefinedFormat(code, this.aux.code2label[trueIndex][code], this.codeVisualization);
         };
 
 
@@ -250,28 +247,103 @@ define([
         };
 
 
-        D3S_JQWidgets_Adapter.prototype._createCode2LabelMap = function (rowData, indexRow) {
+        D3S_JQWidgets_Adapter.prototype._createCode2LabelMap = function (rowData, indexColumn) {
 
-            if (this._isLabelIntoVirtualColumn()) {
-                this.aux.code2label[rowData[indexRow]] = rowData[this.aux.indexCodeColumn2indexVirtualColumn[indexRow]];
-            }
-            else if (this._isLabelIntoDistinct(indexRow)) {
-                if (!this.aux.code2label[rowData[indexRow]]) {
-                    this.aux.code2label[rowData[indexRow]] =
-                        this._getLabelFromDistinctOrDomain(this.$columns[indexRow].values.codes[0].codes, rowData[indexRow]);
+            if( this._checkIfNotExistsCodeInMap(indexColumn,rowData)) {
+                if (this.$codelist == null) {
+                    if (this._areLabelsIntoVirtualColumn()) {
+
+                        this.aux.code2label[indexColumn][rowData[indexColumn]] = rowData[this.aux.indexCodeColumn2indexVirtualColumn[indexColumn]];
+                    }
+                    else if (this._areLabelsIntoDistinct(indexColumn)) {
+                        this.aux.code2label[indexColumn][rowData[indexColumn]] =
+                            this._getLabelFromDistinctOrDomain(this.$columns[indexColumn].values.codes[0].codes, rowData[indexColumn]);
+
+
+                    } else if (this._existCodelistIntoDomain(indexColumn)) {
+                        this._handleDomainCodeCase(rowData, indexColumn);
+
+                    } else {
+                        this.aux.code2label[indexColumn][rowData[indexColumn]] = rowData[indexColumn];
+                    }
                 }
-
-            } else if (this._isLabelIntoDomain(indexRow)) {
-
-                if (!this.aux.code2label[rowData[indexRow]]) {
-                    this.aux.code2label[rowData[indexRow]] =
-                        this._getLabelFromDistinctOrDomain(this.$columns[indexRow].domain.codes[0].codes, rowData[indexRow]);
+                else {
+                    if (!this.aux.code2label[indexColumn][rowData[indexColumn]]) {
+                        this._useCodelistToCreateMap(this.$columns[indexColumn].domain.codes[0].idCodeList);
+                    }
                 }
-
-            } else {
-                this.aux.code2label[rowData[indexRow]] = rowData[indexRow];
             }
         };
+
+
+        D3S_JQWidgets_Adapter.prototype._handleDomainCodeCase = function(rowData, indexColumn) {
+            if(this._areLabelsIntoDomain(indexColumn) ) {
+
+                if(!this.aux.code2label[indexColumn][rowData[indexColumn]]){
+                    this.aux.code2label[indexColumn][rowData[indexColumn]] =
+                        this._getLabelFromDistinctOrDomain(this.$columns[indexColumn].domain.codes[0].codes, rowData[indexColumn]);
+                }
+
+            }else { // look for the codelist if there is one
+                this.$codelist = this.$columns[indexColumn].domain.codes[0].idCodeList;
+                this.$codelistVersion = (this.$columns[indexColumn].domain.codes[0].version)?
+                    this.$columns[indexColumn].domain.codes[0].version: null;
+                console.log(this._useCodelistToCreateMap());
+            }
+        };
+
+
+        D3S_JQWidgets_Adapter.prototype._handleDomainCodeCaseTEST = function(rowData, indexColumn) {
+            if(!this.aux.code2label[indexColumn] || !this.aux.code2label[indexColumn][rowData[indexColumn]]) {
+                if(!this.aux.code2label[indexColumn]){
+                    this.aux.code2label[indexColumn] = {};
+                }
+                this.$codelist = this.$columns[indexColumn].domain.codes[0].idCodeList;
+                this.$codelistVersion = (this.$columns[indexColumn].domain.codes[0].version)?
+                    this.$columns[indexColumn].domain.codes[0].version: null;
+                console.log(this._useCodelistToCreateMap());
+
+            }
+        };
+
+
+        D3S_JQWidgets_Adapter.prototype._checkIfNotExistsCodeInMap = function(indexColumn, rowData) {
+
+            var result =false;
+            if(this.aux.code2label[indexColumn] && this.aux.code2label[indexColumn][rowData[indexColumn]]){
+            }else{
+                if(!this.aux.code2label[indexColumn]) {
+                    this.aux.code2label[indexColumn] = {};
+                }
+                result = true;
+            }
+
+            return result;
+        }
+
+
+        D3S_JQWidgets_Adapter.prototype._useCodelistToCreateMap = function() {
+
+            var self = this;
+            if( this._notExistsCodelistAdapterFromHost()) {
+                var CodelistAdapter = new adapterCodelist;
+                return CodelistAdapter.render({
+                    "uid": self.$codelist,
+                    "version": self.$codelistVersion,
+                    "lang": self.lang
+                })
+            }else{
+                // TODO binded to !this._notExistsCodelistAdapterFromHost()
+            }
+
+
+        };
+
+
+        D3S_JQWidgets_Adapter.prototype._notExistsCodelistAdapterFromHost = function () {
+            // TODO
+            return true;
+        }
 
 
         D3S_JQWidgets_Adapter.prototype._getLabelFromDistinctOrDomain = function (codes, codeToSearch) {
@@ -287,17 +359,25 @@ define([
         };
 
 
-        D3S_JQWidgets_Adapter.prototype._isLabelIntoDomain = function (indexCodeRow) {
-            return this.$columns[indexCodeRow].domain.codes[0].codes[0].label;
+        D3S_JQWidgets_Adapter.prototype._existCodelistIntoDomain = function (indexCodeRow) {
+            return  this.$columns[indexCodeRow].domain.codes[0].idCodeList ;
+
+        }
+
+
+        D3S_JQWidgets_Adapter.prototype._areLabelsIntoDomain = function (indexCodeRow) {
+            debugger;
+            return this.$columns[indexCodeRow].domain.codes[0].codes
+            && this.$columns[indexCodeRow].domain.codes[0].codes[0].label;
         };
 
 
-        D3S_JQWidgets_Adapter.prototype._isLabelIntoVirtualColumn = function () {
+        D3S_JQWidgets_Adapter.prototype._areLabelsIntoVirtualColumn = function () {
             return this.aux.indexCodeColumn2indexVirtualColumn;
         };
 
 
-        D3S_JQWidgets_Adapter.prototype._isLabelIntoDistinct = function (indexCodeRow) {
+        D3S_JQWidgets_Adapter.prototype._areLabelsIntoDistinct = function (indexCodeRow) {
             return this.$columns[indexCodeRow].values.codes[0].codes[0].label;
         };
 
