@@ -28,7 +28,7 @@ define([
                 columns: []
             },
 
-            codeVisualization: "#label|$label ~#code| $(code) ~|",
+            codeVisualization: "#code|[ $code ] - ~#label|$label ~|",
 
             translation: {},
 
@@ -60,10 +60,7 @@ define([
             $.extend(true, this, config);
 
             if (this._validateInput() === true) {
-                /*if(config.d3p){
-                 this._prepareHiddenColumnsForD3P();
-                 }*/
-                this._initVariable();
+                this._initVariables();
                 this._prepareDSDData();
                 if (this._validateData() === true) {
                     this._onValidateDataSuccess(config);
@@ -198,23 +195,20 @@ define([
 
         D3S_JQWidgets_Adapter.prototype._getVisualizationLabel = function (code) {
             //TODO: create langauge expression to fill it
-/*
-            return this.evaluateRegularExpression(code, this.aux.code2label[code]);
-*/
+
+            return this._convertLabelCodeInDefinedFormat(code, this.aux.code2label[code], this.codeVisualization);
+
             return this.aux.code2label[code];
         };
 
 
-        D3S_JQWidgets_Adapter.prototype.evaluateRegularExpression = function (code, label) {
+        D3S_JQWidgets_Adapter.prototype._convertLabelCodeInDefinedFormat = function (code, label, expression) {
             var conditionRegExpression = /(#(\w+)(\|))/;
             var valuesRegExpression = /(((\W)|(\s))*(\$\w+)((\W)|(\s))*(\~))/;
             var onlyValue = /(\$\w+)/;
             var result = "";
 
-            var expression = this.codeVisualization;
-
             while (expression != "" && expression != "|") {
-                debugger;
                 var matchedExp = expression.match(conditionRegExpression);
                 if (matchedExp !== null) {
                     var firstCondition = matchedExp[0]
@@ -227,31 +221,33 @@ define([
                             secondCondition = secondCondition.slice(0, -1);
                             var stringAppend = secondCondition.replace(onlyValue, function (match) {
                                 var returnedValue;
-                                returnedValue = (match.substring(1) == "code") ? code : null;
+                                returnedValue = (match.substring(1) == "label") ? label : null;
                                 return returnedValue;
                             })
                             result += stringAppend;
+                        } else {
+                            break;
                         }
-                        else {
-                            if (firstCondition.substring(1) == "code") {
-                                if (code && code != null) {
-                                    var secondCondition = expression.match(valuesRegExpression)[0];
-                                    expression = expression.replace(valuesRegExpression, "")
-                                    secondCondition = secondCondition.slice(0, -1);
-                                    var stringAppend = secondCondition.replace(onlyValue, function (match) {
-                                        var returnedValue;
-                                        returnedValue = (match.substring(1) == "label") ? label : null;
-                                        return returnedValue;
-                                    })
-                                    result += stringAppend;
-                                }
+                    }
+                    else {
+                        if (firstCondition.substring(1) == "code") {
+                            if (code && code != null) {
+                                var secondCondition = expression.match(valuesRegExpression)[0];
+                                expression = expression.replace(valuesRegExpression, "")
+                                secondCondition = secondCondition.slice(0, -1);
+                                var stringAppend = secondCondition.replace(onlyValue, function (match) {
+                                    var returnedValue;
+                                    returnedValue = (match.substring(1) == "code") ? code : null;
+                                    return returnedValue;
+                                })
+                                result += stringAppend;
                             }
                         }
                     }
                 }
             }
             return result;
-        }
+        };
 
 
         D3S_JQWidgets_Adapter.prototype._createCode2LabelMap = function (rowData, indexRow) {
@@ -327,7 +323,6 @@ define([
 
 
         D3S_JQWidgets_Adapter.prototype._isADatatypeWithoutConversion = function (datatype) {
-
             return (datatype === 'number'
             || datatype === 'text' || datatype === 'boolean'
             || datatype === 'percentage' || datatype === 'enumeration')
@@ -377,7 +372,7 @@ define([
         };
 
 
-        D3S_JQWidgets_Adapter.prototype._initVariable = function () {
+        D3S_JQWidgets_Adapter.prototype._initVariables = function () {
 
             this.$container = $(this.container).find(this.s.CONTENT);
             this.$metadata = this.model.metadata;
@@ -438,51 +433,6 @@ define([
              }
              */
             return (Object.keys(this.errors).length === 0);
-        };
-
-
-        /* D3S_JQWidgets_Adapter.prototype._getLabel = function (obj, attribute) {
-
-         var label,
-         keys;
-
-         if (obj.hasOwnProperty(attribute) && obj.title !== null) {
-
-         if (obj[attribute].hasOwnProperty(this.lang)) {
-         label = obj[attribute][this.lang];
-         } else {
-
-         keys = Object.keys(obj[attribute]);
-
-         if (keys.length > 0) {
-         label = obj[attribute][keys[0]];
-         }
-         }
-         }
-
-         return label;
-         };*/
-
-
-        D3S_JQWidgets_Adapter.prototype._getLabelFromLabelDataType = function (obj) {
-
-            var label, keys;
-
-            if (obj.hasOwnProperty(this.lang)) {
-                label = obj[this.lang];
-            } else {
-
-                keys = Object.keys(obj);
-
-                if (keys.length > 0) {
-                    label = obj[keys[0]];
-                } else {
-                    label = null;
-                }
-
-            }
-
-            return label;
         };
 
 
