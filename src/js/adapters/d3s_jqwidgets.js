@@ -16,6 +16,7 @@ define([
 
         'use strict';
 
+        var CodelistAdapter;
         var defaultOptions = {
 
             lang: 'EN',
@@ -59,14 +60,17 @@ define([
 
         D3S_JQWidgets_Adapter.prototype.render = function (config) {
             $.extend(true, this, config);
+            this.$originalConfig = config;
 
             if (this._validateInput() === true) {
                 this._initVariables();
                 this._prepareDSDData();
-                if (this._validateData() === true) {
-                    this._onValidateDataSuccess(config);
-                } else {
-                    this._onValidateDataError();
+                if (this.$waitForCodelist === false) {
+                    if (this._validateData() === true) {
+                        this._onValidateDataSuccess(config);
+                    } else {
+                        this._onValidateDataError();
+                    }
                 }
             } else {
                 console.error(this.errors);
@@ -75,9 +79,20 @@ define([
         };
 
 
+        D3S_JQWidgets_Adapter.prototype._onValidateDataWithCodelist = function () {
+            var self = this;
+            if (this._validateData() === true) {
+                this._onValidateDataSuccess(self.$originalConfig);
+            } else {
+                this._onValidateDataError();
+            }
+        }
+
+
         D3S_JQWidgets_Adapter.prototype._prepareDSDData = function () {
 
-            console.log(this.$columns)
+
+            this.TEST_removeLabel(1);
 
             this.$columns.forEach(_.bind(function (column, index) {
 
@@ -85,39 +100,76 @@ define([
 
                     if (this._isARightIDColumn(column.id, index)) {
 
+
                         if (column.hasOwnProperty('subject')) {
                             this.aux.subject2id[column.subject] = column.id;
                             this.aux.id2subject[column.id] = column.subject;
 
                             this.aux.subjects.push(column.subject);
-
-                            if (column.subject === 'value') {
-                                this.columnValueIndex = index;
-                            }
-
-                            if (column.hasOwnProperty('dataType')) {
-                                this.aux.index2Datatypes[index] = column.dataType;
-                                this.aux.id2Datatypes[column.id] = column.datatype;
-                            } else {
-                                throw new Error("DSD is not correct: it doesn't have datatype on column: " + index);
-                            }
-
-                            this.$titles.push(column.title[defaultOptions.lang]);
                         }
+
+                        if (column.subject === 'value') {
+                            this.aux.$columnValueIndex = index;
+                        }
+
+                        if (column.hasOwnProperty('dataType')) {
+                            this.aux.index2Datatypes[index] = column.dataType;
+                            this.aux.id2Datatypes[column.id] = column.datatype;
+                        } else {
+                            throw new Error("DSD is not correct: it doesn't have datatype on column: " + index);
+                        }
+
+                        this.$titles.push(column.title[defaultOptions.lang]);
                     }
                 }
                 else {
                     throw new Error("DSD is not correct: it doesn't have id on column: " + index);
                 }
             }, this));
-            this._prepareVisualizationData();
-
+            this._prepareDataForVisualization();
+            if (this.$waitForCodelist == false) {
+                this._prepareVisualizationData();
+            }
         };
+
+
+        D3S_JQWidgets_Adapter.prototype._prepareDataForVisualization = function () {
+            var self = this;
+            var rowIndexes = Object.keys(this.aux.index2Datatypes);
+            var datatypeTmp;
+            for (var i = 0; i < this.$originalData.length; i++) {
+                // fill each row
+                var row = {};
+                var trueIndex = null;
+                for (var j = 0, length = rowIndexes.length; j < length; j++) {
+
+                    trueIndex = rowIndexes[j]; //there could be different false virtual columns in different positions
+                    datatypeTmp = this.aux.index2Datatypes[trueIndex];
+
+                    if (this._isADatatypeCodeColumn(datatypeTmp)) {
+                        this._createCode2LabelMap(this.$originalData[i], trueIndex);
+                    }
+                }
+            }
+        }
+
+
+        D3S_JQWidgets_Adapter.prototype.TEST_removeLabel = function (indexColumn) {
+
+            var codes = this.$columns[indexColumn].values.codes[0].codes;
+
+            for (var i = 0; i < codes.length; i++) {
+                var newCode = {}
+                newCode.code = codes[i].code;
+                codes[i] = newCode;
+            }
+        }
 
 
         D3S_JQWidgets_Adapter.prototype._isARightIDColumn = function (idColumn, indexColumn) {
 
             var isArightColumn;
+
             if (!(this._isAVirtualColumn(idColumn, indexColumn))) {
                 isArightColumn = true;
                 this.aux.id2index[idColumn] = indexColumn;
@@ -137,7 +189,6 @@ define([
             if (idLabel && idLabel != null && idLabel.length > 3) {
 
                 var idOriginalColumn = idLabel.substring(0, idLabel.length - 3);
-
                 if (this.aux.id2index[idOriginalColumn]) {
                     result = true;
                     this._setVariablesForVirtualColumn(idOriginalColumn, indexLabel);
@@ -162,8 +213,8 @@ define([
 
         D3S_JQWidgets_Adapter.prototype._prepareVisualizationData = function () {
 
+            var self = this;
             var rowIndexes = Object.keys(this.aux.index2Datatypes);
-
             var datatypeTmp;
             for (var i = 0; i < this.$originalData.length; i++) {
                 // fill each row
@@ -174,15 +225,9 @@ define([
                     trueIndex = rowIndexes[j]; //there could be different false virtual columns in different positions
                     datatypeTmp = this.aux.index2Datatypes[trueIndex];
 
-                    if (this._isADatatypeWithoutConversion(datatypeTmp)) {
-                        row[this.aux.ids[j]] =
-                            (this.$originalData[i][trueIndex]) ? this.$originalData[i][trueIndex] : null;
-
-                    } else if (this._isADatatypeCodeColumn(datatypeTmp)) {
-                        this._createCode2LabelMap(this.$originalData[i], trueIndex);
-                        row[this.aux.ids[j]] = this._getVisualizationLabel(this.$originalData[i][trueIndex], trueIndex);
+                    if (this._isADatatypeCodeColumn(datatypeTmp)) {
+                        row[self.aux.ids[j]] = self._getVisualizationLabel(self.$originalData[i][trueIndex], trueIndex);
                     } else {
-                        //TODO: handle time and label
                         row[this.aux.ids[j]] =
                             (this.$originalData[i][trueIndex]) ? this.$originalData[i][trueIndex] : null;
                     }
@@ -194,7 +239,7 @@ define([
         };
 
 
-        D3S_JQWidgets_Adapter.prototype._getVisualizationLabel = function (code,trueIndex) {
+        D3S_JQWidgets_Adapter.prototype._getVisualizationLabel = function (code, trueIndex) {
             return this._convertLabelCodeInDefinedFormat(code, this.aux.code2label[trueIndex][code], this.codeVisualization);
         };
 
@@ -249,70 +294,56 @@ define([
 
         D3S_JQWidgets_Adapter.prototype._createCode2LabelMap = function (rowData, indexColumn) {
 
-            if( this._checkIfNotExistsCodeInMap(indexColumn,rowData)) {
-                if (this.$codelist == null) {
-                    if (this._areLabelsIntoVirtualColumn()) {
 
-                        this.aux.code2label[indexColumn][rowData[indexColumn]] = rowData[this.aux.indexCodeColumn2indexVirtualColumn[indexColumn]];
-                    }
-                    else if (this._areLabelsIntoDistinct(indexColumn)) {
-                        this.aux.code2label[indexColumn][rowData[indexColumn]] =
-                            this._getLabelFromDistinctOrDomain(this.$columns[indexColumn].values.codes[0].codes, rowData[indexColumn]);
+            var self = this;
 
+            if (this._checkIfNotExistsCodeInMap(indexColumn, rowData)) {
+                /*
+                 if (this.$codelist == null) {
+                 */
+                if (this._areLabelsIntoVirtualColumn()) {
 
-                    } else if (this._existCodelistIntoDomain(indexColumn)) {
-                        this._handleDomainCodeCase(rowData, indexColumn);
-
-                    } else {
-                        this.aux.code2label[indexColumn][rowData[indexColumn]] = rowData[indexColumn];
-                    }
+                    this.aux.code2label[indexColumn][rowData[indexColumn]] = rowData[this.aux.indexCodeColumn2indexVirtualColumn[indexColumn]];
                 }
-                else {
-                    if (!this.aux.code2label[indexColumn][rowData[indexColumn]]) {
-                        this._useCodelistToCreateMap(this.$columns[indexColumn].domain.codes[0].idCodeList);
-                    }
+                else if (this._areLabelsIntoDistinct(indexColumn)) {
+                    this.aux.code2label[indexColumn][rowData[indexColumn]] =
+                        this._getLabelFromDistinctOrDomain(this.$columns[indexColumn].values.codes[0].codes, rowData[indexColumn]);
+
+
+                } else if (this._existCodelistIntoDomain(indexColumn)) {
+                    this._handleDomainCodeCase(rowData, indexColumn);
+
+                } else {
+                    this.aux.code2label[indexColumn][rowData[indexColumn]] = rowData[indexColumn];
                 }
             }
         };
 
 
-        D3S_JQWidgets_Adapter.prototype._handleDomainCodeCase = function(rowData, indexColumn) {
-            if(this._areLabelsIntoDomain(indexColumn) ) {
+        D3S_JQWidgets_Adapter.prototype._handleDomainCodeCase = function (rowData, indexColumn) {
+            if (this._areLabelsIntoDomain(indexColumn)) {
 
-                if(!this.aux.code2label[indexColumn][rowData[indexColumn]]){
+                if (!this.aux.code2label[indexColumn][rowData[indexColumn]]) {
                     this.aux.code2label[indexColumn][rowData[indexColumn]] =
                         this._getLabelFromDistinctOrDomain(this.$columns[indexColumn].domain.codes[0].codes, rowData[indexColumn]);
                 }
 
-            }else { // look for the codelist if there is one
+            } else { // look for the codelist if there is one
                 this.$codelist = this.$columns[indexColumn].domain.codes[0].idCodeList;
-                this.$codelistVersion = (this.$columns[indexColumn].domain.codes[0].version)?
-                    this.$columns[indexColumn].domain.codes[0].version: null;
-                console.log(this._useCodelistToCreateMap());
+                this.$codelistVersion = (this.$columns[indexColumn].domain.codes[0].version) ? this.$columns[indexColumn].domain.codes[0].version : null;
+
+                this.$waitForCodelist = true;
+                this._useCodelistToCreateMap(indexColumn);
             }
         };
 
 
-        D3S_JQWidgets_Adapter.prototype._handleDomainCodeCaseTEST = function(rowData, indexColumn) {
-            if(!this.aux.code2label[indexColumn] || !this.aux.code2label[indexColumn][rowData[indexColumn]]) {
-                if(!this.aux.code2label[indexColumn]){
-                    this.aux.code2label[indexColumn] = {};
-                }
-                this.$codelist = this.$columns[indexColumn].domain.codes[0].idCodeList;
-                this.$codelistVersion = (this.$columns[indexColumn].domain.codes[0].version)?
-                    this.$columns[indexColumn].domain.codes[0].version: null;
-                console.log(this._useCodelistToCreateMap());
+        D3S_JQWidgets_Adapter.prototype._checkIfNotExistsCodeInMap = function (indexColumn, rowData) {
 
-            }
-        };
-
-
-        D3S_JQWidgets_Adapter.prototype._checkIfNotExistsCodeInMap = function(indexColumn, rowData) {
-
-            var result =false;
-            if(this.aux.code2label[indexColumn] && this.aux.code2label[indexColumn][rowData[indexColumn]]){
-            }else{
-                if(!this.aux.code2label[indexColumn]) {
+            var result = false;
+            if (this.aux.code2label[indexColumn] && this.aux.code2label[indexColumn][rowData[indexColumn]]) {
+            } else {
+                if (!this.aux.code2label[indexColumn]) {
                     this.aux.code2label[indexColumn] = {};
                 }
                 result = true;
@@ -321,22 +352,54 @@ define([
             return result;
         }
 
+        D3S_JQWidgets_Adapter.prototype._createDistinctCodesFromData = function (indexColumn) {
 
-        D3S_JQWidgets_Adapter.prototype._useCodelistToCreateMap = function() {
+            debugger;
+            var distinctCodes = {};
+            for (var i = 0, length = this.$originalData.length; i < length; i++) {
+                distinctCodes[this.$originalData[i][indexColumn]] = true;
+            }
+            return Object.keys(distinctCodes);
+        }
+
+
+        D3S_JQWidgets_Adapter.prototype._createMap = function (dataCodelist, indexColumn) {
+            var self = this;
+            for (var i = 0, length = dataCodelist.length; i < length; i++)
+                self.aux.code2label[indexColumn][dataCodelist[i].code] = dataCodelist[i].title[self.lang]
+        };
+
+
+        D3S_JQWidgets_Adapter.prototype._useCodelistToCreateMap = function (indexColumn) {
 
             var self = this;
-            if( this._notExistsCodelistAdapterFromHost()) {
-                var CodelistAdapter = new adapterCodelist;
-                return CodelistAdapter.render({
-                    "uid": self.$codelist,
-                    "version": self.$codelistVersion,
-                    "lang": self.lang
-                })
-            }else{
+            if (typeof CodelistAdapter === 'undefined') {
+                var distinctCodes = self._createDistinctCodesFromData(indexColumn);
+                console.log(distinctCodes);
+                if (this._notExistsCodelistAdapterFromHost()) {
+                    if (!CodelistAdapter) {
+                        CodelistAdapter = new adapterCodelist;
+
+                        $.when(CodelistAdapter.render(
+                            {
+                                "uid": self.$codelist,
+                                "version": self.$codelistVersion,
+                                "lang": self.lang,
+                                "codes": distinctCodes,
+
+                                "callback": self._createMap
+
+                            }, indexColumn)).done(function (res) {
+
+                            self._createMap(res, indexColumn);
+                            self._prepareVisualizationData();
+                            self._onValidateDataWithCodelist();
+                        });
+                    }
+                }
+            } else {
                 // TODO binded to !this._notExistsCodelistAdapterFromHost()
             }
-
-
         };
 
 
@@ -360,15 +423,13 @@ define([
 
 
         D3S_JQWidgets_Adapter.prototype._existCodelistIntoDomain = function (indexCodeRow) {
-            return  this.$columns[indexCodeRow].domain.codes[0].idCodeList ;
-
+            return this.$columns[indexCodeRow].domain.codes[0].idCodeList;
         }
 
 
         D3S_JQWidgets_Adapter.prototype._areLabelsIntoDomain = function (indexCodeRow) {
-            debugger;
             return this.$columns[indexCodeRow].domain.codes[0].codes
-            && this.$columns[indexCodeRow].domain.codes[0].codes[0].label;
+                && this.$columns[indexCodeRow].domain.codes[0].codes[0].label;
         };
 
 
@@ -410,9 +471,7 @@ define([
 
 
         D3S_JQWidgets_Adapter.prototype._validateData = function () {
-
             this.errors = {};
-
             return (Object.keys(this.errors).length === 0);
         };
 
@@ -455,6 +514,7 @@ define([
         D3S_JQWidgets_Adapter.prototype._initVariables = function () {
 
             this.$container = $(this.container).find(this.s.CONTENT);
+            this.$waitForCodelist = false;
             this.$metadata = this.model.metadata;
             this.$dsd = this.$metadata.dsd;
             this.$columns = this.$dsd.columns;
