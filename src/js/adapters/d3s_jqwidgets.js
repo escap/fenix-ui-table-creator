@@ -86,7 +86,7 @@ define([
             } else {
                 this._onValidateDataError();
             }
-        }
+        };
 
 
         D3S_JQWidgets_Adapter.prototype._prepareDSDData = function () {
@@ -151,7 +151,7 @@ define([
                     }
                 }
             }
-        }
+        };
 
 
         D3S_JQWidgets_Adapter.prototype.TEST_removeLabel = function (indexColumn) {
@@ -163,7 +163,7 @@ define([
                 newCode.code = codes[i].code;
                 codes[i] = newCode;
             }
-        }
+        };
 
 
         D3S_JQWidgets_Adapter.prototype._isARightIDColumn = function (idColumn, indexColumn) {
@@ -348,9 +348,8 @@ define([
                 }
                 result = true;
             }
-
             return result;
-        }
+        };
 
         D3S_JQWidgets_Adapter.prototype._createDistinctCodesFromData = function (indexColumn) {
 
@@ -360,7 +359,7 @@ define([
                 distinctCodes[this.$originalData[i][indexColumn]] = true;
             }
             return Object.keys(distinctCodes);
-        }
+        };
 
 
         D3S_JQWidgets_Adapter.prototype._createMap = function (dataCodelist, indexColumn) {
@@ -406,7 +405,7 @@ define([
         D3S_JQWidgets_Adapter.prototype._notExistsCodelistAdapterFromHost = function () {
             // TODO
             return true;
-        }
+        };
 
 
         D3S_JQWidgets_Adapter.prototype._getLabelFromDistinctOrDomain = function (codes, codeToSearch) {
