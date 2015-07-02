@@ -378,17 +378,15 @@ define([
                 if (this._notExistsCodelistAdapterFromHost()) {
                     if (!CodelistAdapter) {
                         CodelistAdapter = new adapterCodelist;
-
                         $.when(CodelistAdapter.render(
                             {
                                 "uid": self.$codelist,
                                 "version": self.$codelistVersion,
                                 "lang": self.lang,
                                 "codes": distinctCodes,
-
                                 "callback": self._createMap
 
-                            }, indexColumn)).done(function (res) {
+                            })).done(function (res) {
 
                             self._createMap(res, indexColumn);
                             self._prepareVisualizationData();

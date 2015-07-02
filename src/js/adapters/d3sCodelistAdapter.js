@@ -16,7 +16,7 @@ define(['jquery'], function ($) {
      * @param rowIndex
      * @return map code-label
      */
-    D3SCodelistAdapter.prototype.render = function (payloadCodelist, indexColumn) {
+    D3SCodelistAdapter.prototype.render = function (payloadCodelist) {
         var self = this;
 
         var result = null;
