@@ -4,7 +4,10 @@ define(['jquery'], function ($) {
     'use strict';
 
     var defaultConf = {
+/*
         "urlCodelist":"http://fenix.fao.org/d3s/msd/codes/filter"
+*/
+        "urlCodelist":"http://fenix.fao.org/d3s_dev/msd/codes/filter"
     }
 
     function D3SCodelistAdapter() {

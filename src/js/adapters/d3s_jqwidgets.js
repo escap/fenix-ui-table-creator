@@ -64,8 +64,12 @@ define([
 
             if (this._validateInput() === true) {
                 this._initVariables();
+               /* this.TEST_removeLabel(0);
+                this.TEST_removeLabel(2);*/
+
                 this._prepareDSDData();
-                if (this.$waitForCodelist === false) {
+                if (this.checkIfNotWaitingForCodelists()) {
+                    console.log('without codelist')
                     if (this._validateData() === true) {
                         this._onValidateDataSuccess(config);
                     } else {
@@ -79,6 +83,18 @@ define([
         };
 
 
+        D3S_JQWidgets_Adapter.prototype.checkIfNotWaitingForCodelists = function () {
+
+            if($.isEmptyObject(this.$waitForCodelist) === false) {
+                for (var codeColumn in this.$waitForCodelist) {
+                    if (this.$waitForCodelist[codeColumn] === true)
+                        return false;
+                }
+            }
+            return true;
+
+        }
+
         D3S_JQWidgets_Adapter.prototype._onValidateDataWithCodelist = function () {
             var self = this;
             if (this._validateData() === true) {
@@ -91,20 +107,15 @@ define([
 
         D3S_JQWidgets_Adapter.prototype._prepareDSDData = function () {
 
-
-            this.TEST_removeLabel(1);
-
             this.$columns.forEach(_.bind(function (column, index) {
 
                 if (column.hasOwnProperty('id')) {
 
                     if (this._isARightIDColumn(column.id, index)) {
 
-
                         if (column.hasOwnProperty('subject')) {
                             this.aux.subject2id[column.subject] = column.id;
                             this.aux.id2subject[column.id] = column.subject;
-
                             this.aux.subjects.push(column.subject);
                         }
 
@@ -127,14 +138,13 @@ define([
                 }
             }, this));
             this._prepareDataForVisualization();
-            if (this.$waitForCodelist == false) {
+            if (this.checkIfNotWaitingForCodelists()) {
                 this._prepareVisualizationData();
             }
         };
 
 
         D3S_JQWidgets_Adapter.prototype._prepareDataForVisualization = function () {
-            var self = this;
             var rowIndexes = Object.keys(this.aux.index2Datatypes);
             var datatypeTmp;
             for (var i = 0; i < this.$originalData.length; i++) {
@@ -157,7 +167,6 @@ define([
         D3S_JQWidgets_Adapter.prototype.TEST_removeLabel = function (indexColumn) {
 
             var codes = this.$columns[indexColumn].values.codes[0].codes;
-
             for (var i = 0; i < codes.length; i++) {
                 var newCode = {}
                 newCode.code = codes[i].code;
@@ -187,7 +196,6 @@ define([
             var result;
 
             if (idLabel && idLabel != null && idLabel.length > 3) {
-
                 var idOriginalColumn = idLabel.substring(0, idLabel.length - 3);
                 if (this.aux.id2index[idOriginalColumn]) {
                     result = true;
@@ -332,8 +340,10 @@ define([
                 this.$codelist = this.$columns[indexColumn].domain.codes[0].idCodeList;
                 this.$codelistVersion = (this.$columns[indexColumn].domain.codes[0].version) ? this.$columns[indexColumn].domain.codes[0].version : null;
 
-                this.$waitForCodelist = true;
-                this._useCodelistToCreateMap(indexColumn);
+               if(!this.$waitForCodelist[indexColumn]) {
+                   this.$waitForCodelist[indexColumn] = true;
+                   this._useCodelistToCreateMap(indexColumn);
+               }
             }
         };
 
@@ -353,7 +363,6 @@ define([
 
         D3S_JQWidgets_Adapter.prototype._createDistinctCodesFromData = function (indexColumn) {
 
-            debugger;
             var distinctCodes = {};
             for (var i = 0, length = this.$originalData.length; i < length; i++) {
                 distinctCodes[this.$originalData[i][indexColumn]] = true;
@@ -372,12 +381,10 @@ define([
         D3S_JQWidgets_Adapter.prototype._useCodelistToCreateMap = function (indexColumn) {
 
             var self = this;
-            if (typeof CodelistAdapter === 'undefined') {
                 var distinctCodes = self._createDistinctCodesFromData(indexColumn);
                 console.log(distinctCodes);
                 if (this._notExistsCodelistAdapterFromHost()) {
-                    if (!CodelistAdapter) {
-                        CodelistAdapter = new adapterCodelist;
+                        var CodelistAdapter = new adapterCodelist;
                         $.when(CodelistAdapter.render(
                             {
                                 "uid": self.$codelist,
@@ -388,13 +395,18 @@ define([
 
                             })).done(function (res) {
 
+
+                            self.$waitForCodelist[indexColumn] = false;
                             self._createMap(res, indexColumn);
-                            self._prepareVisualizationData();
-                            self._onValidateDataWithCodelist();
+
+                            if(self.checkIfNotWaitingForCodelists()) {
+                                self._prepareVisualizationData();
+                                self._onValidateDataWithCodelist();
+                            }
                         });
                     }
-                }
-            } else {
+
+            else {
                 // TODO binded to !this._notExistsCodelistAdapterFromHost()
             }
         };
@@ -412,7 +424,7 @@ define([
                     if (codes[i].label) {
                         return codes[i].label[this.lang];
                     } else {
-                        return codes[i].code;
+                        return "";
                     }
                 }
             }
@@ -493,7 +505,6 @@ define([
         D3S_JQWidgets_Adapter.prototype._createConfiguration = function (config) {
 
             this.config = (config.options) ? $.extend(true, config.options, this.dataSource) : $.extend(true, this.dataSource, baseConfig);
-
             this.config.ready = function () {
                 amplify.publish(e.READY, this);
             };
@@ -511,7 +522,7 @@ define([
         D3S_JQWidgets_Adapter.prototype._initVariables = function () {
 
             this.$container = $(this.container).find(this.s.CONTENT);
-            this.$waitForCodelist = false;
+            this.$waitForCodelist = {};
             this.$metadata = this.model.metadata;
             this.$dsd = this.$metadata.dsd;
             this.$columns = this.$dsd.columns;
@@ -565,54 +576,12 @@ define([
             }
 
             //Data
-            /* if (!this.model.hasOwnProperty("data")) {
-             this.errors.data = "Model does not container 'data' attribute.";
+             if (!this.model.hasOwnProperty("data")) {
+             this.errors.data = "Model does not contain 'data' attribute.";
              }
-             */
+
             return (Object.keys(this.errors).length === 0);
         };
-
-
-        /* D3S_JQWidgets_Adapter.prototype._createCode2LabelMapOLD = function (column) {
-
-         var map = {},
-         values;
-
-         switch (column.dataType) {
-         case 'code' :
-         values = _.each(column.values.codes[0].codes, function (v) {
-         map[v.code] = this._getLabel(v, 'label');
-         }, this);
-         break;
-
-         case 'customCode' :
-         values = _.each(column.values.codes[0].codes, function (v) {
-         map[v.code] = this._getLabel(v, 'label');
-         }, this);
-         break;
-
-         case 'year' :
-         case 'month':
-         case 'date' :
-         case 'time' :
-         values = _.each(column.values.timeList, function (v) {
-         map[v] = v;
-         }, this);
-         break;
-
-
-         case 'label':
-         values = _.each(column.values.timeList, function (v) {
-         map[v] = this._getLabelFromLabelDataType(v);
-         }, this);
-
-         break;
-
-         }
-
-
-         return map;
-         };*/
 
 
         D3S_JQWidgets_Adapter.prototype._getColumnBySubject = function (subject) {
