@@ -16,7 +16,6 @@ define([
 
         'use strict';
 
-        var CodelistAdapter;
         var defaultOptions = {
 
             lang: 'EN',
@@ -64,8 +63,8 @@ define([
 
             if (this._validateInput() === true) {
                 this._initVariables();
-               /* this.TEST_removeLabel(0);
-                this.TEST_removeLabel(2);*/
+                /* this.TEST_removeLabel(0);
+                 this.TEST_removeLabel(2);*/
 
                 this._prepareDSDData();
                 if (this.checkIfNotWaitingForCodelists()) {
@@ -85,7 +84,7 @@ define([
 
         D3S_JQWidgets_Adapter.prototype.checkIfNotWaitingForCodelists = function () {
 
-            if($.isEmptyObject(this.$waitForCodelist) === false) {
+            if ($.isEmptyObject(this.$waitForCodelist) === false) {
                 for (var codeColumn in this.$waitForCodelist) {
                     if (this.$waitForCodelist[codeColumn] === true)
                         return false;
@@ -93,7 +92,8 @@ define([
             }
             return true;
 
-        }
+        };
+
 
         D3S_JQWidgets_Adapter.prototype._onValidateDataWithCodelist = function () {
             var self = this;
@@ -340,10 +340,10 @@ define([
                 this.$codelist = this.$columns[indexColumn].domain.codes[0].idCodeList;
                 this.$codelistVersion = (this.$columns[indexColumn].domain.codes[0].version) ? this.$columns[indexColumn].domain.codes[0].version : null;
 
-               if(!this.$waitForCodelist[indexColumn]) {
-                   this.$waitForCodelist[indexColumn] = true;
-                   this._useCodelistToCreateMap(indexColumn);
-               }
+                if (!this.$waitForCodelist[indexColumn]) {
+                    this.$waitForCodelist[indexColumn] = true;
+                    this._useCodelistToCreateMap(indexColumn);
+                }
             }
         };
 
@@ -360,6 +360,7 @@ define([
             }
             return result;
         };
+
 
         D3S_JQWidgets_Adapter.prototype._createDistinctCodesFromData = function (indexColumn) {
 
@@ -381,31 +382,27 @@ define([
         D3S_JQWidgets_Adapter.prototype._useCodelistToCreateMap = function (indexColumn) {
 
             var self = this;
-                var distinctCodes = self._createDistinctCodesFromData(indexColumn);
-                console.log(distinctCodes);
-                if (this._notExistsCodelistAdapterFromHost()) {
-                        var CodelistAdapter = new adapterCodelist;
-                        $.when(CodelistAdapter.render(
-                            {
-                                "uid": self.$codelist,
-                                "version": self.$codelistVersion,
-                                "lang": self.lang,
-                                "codes": distinctCodes,
-                                "callback": self._createMap
+            var distinctCodes = self._createDistinctCodesFromData(indexColumn);
+            console.log(distinctCodes);
+            if (this._notExistsCodelistAdapterFromHost()) {
+                var CodelistAdapter = new adapterCodelist;
+                $.when(CodelistAdapter.render(
+                    {
+                        "uid": self.$codelist,
+                        "version": self.$codelistVersion,
+                        "lang": self.lang,
+                        "codes": distinctCodes,
+                        "callback": self._createMap
+                    })).done(function (res) {
+                    self.$waitForCodelist[indexColumn] = false;
+                    self._createMap(res, indexColumn);
 
-                            })).done(function (res) {
-
-
-                            self.$waitForCodelist[indexColumn] = false;
-                            self._createMap(res, indexColumn);
-
-                            if(self.checkIfNotWaitingForCodelists()) {
-                                self._prepareVisualizationData();
-                                self._onValidateDataWithCodelist();
-                            }
-                        });
+                    if (self.checkIfNotWaitingForCodelists()) {
+                        self._prepareVisualizationData();
+                        self._onValidateDataWithCodelist();
                     }
-
+                });
+            }
             else {
                 // TODO binded to !this._notExistsCodelistAdapterFromHost()
             }
@@ -433,7 +430,7 @@ define([
 
         D3S_JQWidgets_Adapter.prototype._existCodelistIntoDomain = function (indexCodeRow) {
             return this.$columns[indexCodeRow].domain.codes[0].idCodeList;
-        }
+        };
 
 
         D3S_JQWidgets_Adapter.prototype._areLabelsIntoDomain = function (indexCodeRow) {
@@ -576,9 +573,9 @@ define([
             }
 
             //Data
-             if (!this.model.hasOwnProperty("data")) {
-             this.errors.data = "Model does not contain 'data' attribute.";
-             }
+            if (!this.model.hasOwnProperty("data")) {
+                this.errors.data = "Model does not contain 'data' attribute.";
+            }
 
             return (Object.keys(this.errors).length === 0);
         };
