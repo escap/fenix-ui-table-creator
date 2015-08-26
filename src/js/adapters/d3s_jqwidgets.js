@@ -197,7 +197,7 @@ define([
 
             if (idLabel && idLabel != null && idLabel.length > 3) {
                 var idOriginalColumn = idLabel.substring(0, idLabel.length - 3);
-                if (this.aux.id2index[idOriginalColumn]) {
+                if (typeof this.aux.id2index[idOriginalColumn] !== 'undefined') {
                     result = true;
                     this._setVariablesForVirtualColumn(idOriginalColumn, indexLabel);
                 } else {
