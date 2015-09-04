@@ -10,17 +10,17 @@ define(function () {
             'fx-t-c/adapters': './adapters',
             'fx-t-c/templates': './templates',
             // third party libs
-            text: '//fenixapps.fao.org/repository/js/requirejs/plugins/text/2.0.12/text',
-            jquery: "//ajax.googleapis.com/ajax/libs/jquery/2.0.0/jquery.min",
-            jqwidgets: '//fenixapps.fao.org/repository/js/jqwidgets/3.1/jqx-light',//,
-            'jqxmenu': '//fenixapps.fao.org/repository/js/jqwidgets/3.1/jqxmenu',
-            'jqxgrid.pager': '//fenixapps.fao.org/repository/js/jqwidgets/3.1/jqxgrid.pager',
-           'jqxgrid.filter': '//fenixapps.fao.org/repository/js/jqwidgets/3.1/jqxgrid.filter',
-           'jqxgrid.grouping': '//fenixapps.fao.org/repository/js/jqwidgets/3.1/jqxgrid.grouping',
+            text: '{FENIX_CDN}/js/requirejs/plugins/text/2.0.12/text',
+            //jquery: "//ajax.googleapis.com/ajax/libs/jquery/2.0.0/jquery.min",
+            jqwidgets: '{FENIX_CDN}/js/jqwidgets/3.1/jqx-light',//,
+            'jqxmenu': '{FENIX_CDN}/js/jqwidgets/3.1/jqxmenu',
+            'jqxgrid.pager': '{FENIX_CDN}/js/jqwidgets/3.1/jqxgrid.pager',
+           'jqxgrid.filter': '{FENIX_CDN}/js/jqwidgets/3.1/jqxgrid.filter',
+           'jqxgrid.grouping': '{FENIX_CDN}/js/jqwidgets/3.1/jqxgrid.grouping',
 
-            underscore: "//fenixapps.fao.org/repository/js/underscore/1.7.0/underscore.min",
-            moment: "//fenixapps.fao.org/repository/js/moment/2.9.0/moment.min",
-            amplify: "//fenixapps.fao.org/repository/js/amplify/1.1.2/amplify.min"
+            underscore: "{FENIX_CDN}/js/underscore/1.7.0/underscore.min",
+            moment: "{FENIX_CDN}/js/moment/2.9.0/moment.min",
+            amplify: "{FENIX_CDN}/js/amplify/1.1.2/amplify.min"
 
         },
 

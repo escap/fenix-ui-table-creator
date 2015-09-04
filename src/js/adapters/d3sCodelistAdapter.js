@@ -1,14 +1,15 @@
 /*global define, amplify, console*/
-define(['jquery'], function ($) {
+define(['jquery',
+"fx-t-c/config/config",
+"fx-t-c/config/config-default",
+], function ($, C, DC) {
 
     'use strict';
 
     var defaultConf = {
-/*
-        "urlCodelist":"http://fenix.fao.org/d3s/msd/codes/filter"
-*/
-        "urlCodelist":"http://fenix.fao.org/d3s_dev/msd/codes/filter"
-    }
+
+        "urlCodelist": C.CODELIST_URL | DC.CODELIST_URL
+    };
 
     function D3SCodelistAdapter() {
         this.$codelistURL = defaultConf.urlCodelist;
@@ -20,6 +21,8 @@ define(['jquery'], function ($) {
      * @return map code-label
      */
     D3SCodelistAdapter.prototype.render = function (payloadCodelist) {
+
+        console.log(C)
         var self = this;
 
         var result = null;
