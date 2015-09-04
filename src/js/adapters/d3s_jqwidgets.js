@@ -68,7 +68,6 @@ define([
 
                 this._prepareDSDData();
                 if (this.checkIfNotWaitingForCodelists()) {
-                    console.log('without codelist')
                     if (this._validateData() === true) {
                         this._onValidateDataSuccess(config);
                     } else {
@@ -383,7 +382,6 @@ define([
 
             var self = this;
             var distinctCodes = self._createDistinctCodesFromData(indexColumn);
-            console.log(distinctCodes);
             if (this._notExistsCodelistAdapterFromHost()) {
                 var CodelistAdapter = new adapterCodelist;
                 $.when(CodelistAdapter.render(
