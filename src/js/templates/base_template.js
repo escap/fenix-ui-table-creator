@@ -1,7 +1,7 @@
 /*global define*/
 define([
         'jquery',
-        'text!fx-t-c/html/templates/base_template.html'
+        'text!fx-t-c/html/templates/base_template.hbs'
     ],
     function ($, template) {
 
