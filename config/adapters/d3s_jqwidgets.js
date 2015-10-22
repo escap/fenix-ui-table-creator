@@ -4,7 +4,7 @@ define(function () {
     return {
         sortable: true,
         //filterable:true,
-        showfilterrow: true,
+        //showfilterrow: true,
         pageable: true,
         autorowheight: true,
         columnsresize: true,
