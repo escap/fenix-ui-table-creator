@@ -3,7 +3,7 @@ define(function () {
 
     return {
         sortable: true,
-        filterable:true,
+        //filterable:true,
         showfilterrow: true,
         pageable: true,
         autorowheight: true,
