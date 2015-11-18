@@ -1,7 +1,3 @@
-# fenix-ui-table-creator
-Fenix table component
-
-
 Fenix UI Table Creator
 ========================
 FENIX component to create and visualize a table
