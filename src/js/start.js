@@ -18,7 +18,6 @@ define([
         }
 
         TableCreator.prototype.render = function (config) {
-
 /*
             config.model = this.testData();
 */

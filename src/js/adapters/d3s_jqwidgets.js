@@ -57,9 +57,10 @@ define([
         };
 
 
-        D3S_JQWidgets_Adapter.prototype.render = function (config) {
-            $.extend(true, this, config);
-            this.$originalConfig = config;
+        D3S_JQWidgets_Adapter.prototype.render = function (opts) {
+            $.extend(true, this, opts);
+
+            this.$originalConfig = opts;
 
             if (this._validateInput() === true) {
                 this._initVariables();
@@ -69,7 +70,7 @@ define([
                 this._prepareDSDData();
                 if (this.checkIfNotWaitingForCodelists()) {
                     if (this._validateData() === true) {
-                        this._onValidateDataSuccess(config);
+                        this._onValidateDataSuccess(opts);
                     } else {
                         this._onValidateDataError();
                     }
@@ -461,7 +462,14 @@ define([
             if (indexRow === 0) {
                 var column = {};
                 column.text = this.$titles[indexColumn];
-                column.datafield = this.aux.ids[indexColumn]
+                column.datafield = this.aux.ids[indexColumn];
+                if(this.$originalConfig.options && this.$originalConfig.options.hidden_columns &&  this.$originalConfig.options.hidden_columns.length >0){
+                    if((this.$originalConfig.options.hidden_columns.indexOf(column.datafield)>=0) ||
+                        (this.$originalConfig.options.hidden_columns.indexOf(this.aux.id2subject[column.datafield]) >=0) ){
+                        column.hidden = true;
+                    }
+
+                }
                 this.dataSource.columns.push(column);
             }
         };
@@ -510,6 +518,9 @@ define([
 
             var self = this;
 
+            if(this.config.hidden_columns){
+                delete this.config.hidden_columns;
+            }
             this.$container.jqxGrid(this.config);
         };
 
