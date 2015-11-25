@@ -507,7 +507,7 @@ define([
 
         D3S_JQWidgets_Adapter.prototype._createConfiguration = function (config) {
 
-            this.config = (config.options) ? $.extend(true, config.options, this.dataSource) : $.extend(true, this.dataSource, baseConfig);
+            this.config =   $.extend(true, this.dataSource, baseConfig);
             this.config.ready = function () {
                 amplify.publish(e.READY, this);
             };
@@ -521,7 +521,34 @@ define([
             if(this.config.hidden_columns){
                 delete this.config.hidden_columns;
             }
-            this.$container.jqxGrid(this.config);
+
+             //setColumnWidth();
+
+             this.$container.jqxGrid(this.config);
+
+            function setColumnWidth() {
+
+                var totalColumns = self.config.columns,
+                    columns = 0,
+                    width;
+
+                for (var i = 0; i < totalColumns.length; i ++ ) {
+
+                    if (totalColumns[i].hasOwnProperty('hidden') && totalColumns[i].hidden === true) {
+                        columns ++;
+                    }
+
+                }
+
+                width = Math.round(100 / columns);
+
+                for (i = 0; i <  totalColumns.length; i ++ ) {
+                    console.log("set")
+                        totalColumns[i].width = width + "%";
+                }
+
+
+            }
         };
 
 
