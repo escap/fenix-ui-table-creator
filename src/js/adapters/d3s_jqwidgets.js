@@ -1,6 +1,8 @@
 /*global define, amplify, console*/
 define([
         'jquery',
+        "fx-t-c/config/config",
+        "fx-t-c/config/config-default",
         'fx-t-c/config/adapters/d3s_jqwidgets',
         'underscore',
         'fx-t-c/adapters/d3sCodelistAdapter',
@@ -12,7 +14,7 @@ define([
         'jqxgrid.grouping',
         'jqxmenu'
     ],
-    function ($, baseConfig, _, adapterCodelist) {
+    function ($,C,DC, baseConfig, _, adapterCodelist) {
 
         'use strict';
 
@@ -29,7 +31,7 @@ define([
                 columns: []
             },
 
-            codeVisualization: "#code|[ $code ] - ~#label|$label ~|",
+/*            codeVisualization: "#code|[ $code ] - ~#label|$label ~|",*/
 
             translation: {},
 
@@ -563,6 +565,7 @@ define([
             this.$originalData = this.model.data || [];
             this.$visualizationData = [];
             this.$codelist = ($.isEmptyObject(this.codelist)) ? null : this.codelist;
+            this.codeVisualization = C.codeVisualization || DC.codeVisualization;
         };
 
 
