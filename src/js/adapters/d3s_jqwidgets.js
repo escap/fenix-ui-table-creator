@@ -14,7 +14,7 @@ define([
         'jqxgrid.grouping',
         'jqxmenu'
     ],
-    function ($,C,DC, baseConfig, _, adapterCodelist) {
+    function ($, C, DC, baseConfig, _, adapterCodelist) {
 
         'use strict';
 
@@ -31,7 +31,7 @@ define([
                 columns: []
             },
 
-/*            codeVisualization: "#code|[ $code ] - ~#label|$label ~|",*/
+            /*            codeVisualization: "#code|[ $code ] - ~#label|$label ~|",*/
 
             translation: {},
 
@@ -465,9 +465,9 @@ define([
                 var column = {};
                 column.text = this.$titles[indexColumn];
                 column.datafield = this.aux.ids[indexColumn];
-                if(this.$originalConfig.options && this.$originalConfig.options.hidden_columns &&  this.$originalConfig.options.hidden_columns.length >0){
-                    if((this.$originalConfig.options.hidden_columns.indexOf(column.datafield)>=0) ||
-                        (this.$originalConfig.options.hidden_columns.indexOf(this.aux.id2subject[column.datafield]) >=0) ){
+                if (this.$originalConfig.options && this.$originalConfig.options.hidden_columns && this.$originalConfig.options.hidden_columns.length > 0) {
+                    if ((this.$originalConfig.options.hidden_columns.indexOf(column.datafield) >= 0) ||
+                        (this.$originalConfig.options.hidden_columns.indexOf(this.aux.id2subject[column.datafield]) >= 0)) {
                         column.hidden = true;
                     }
 
@@ -509,7 +509,7 @@ define([
 
         D3S_JQWidgets_Adapter.prototype._createConfiguration = function (config) {
 
-            this.config =   $.extend(true, this.dataSource, baseConfig);
+            this.config = $.extend(true, this.dataSource, baseConfig);
             this.config.ready = function () {
                 amplify.publish(e.READY, this);
             };
@@ -520,13 +520,15 @@ define([
 
             var self = this;
 
-            if(this.config.hidden_columns){
+            if (this.config.hidden_columns) {
                 delete this.config.hidden_columns;
             }
 
-             //setColumnWidth();
+            //setColumnWidth();
 
-             this.$container.jqxGrid(this.config);
+
+            this.config = (this.options) ? $.extend(true, this.config, this.options) : this.config;
+            this.$container.jqxGrid(this.config);
 
             function setColumnWidth() {
 
@@ -534,19 +536,18 @@ define([
                     columns = 0,
                     width;
 
-                for (var i = 0; i < totalColumns.length; i ++ ) {
+                for (var i = 0; i < totalColumns.length; i++) {
 
                     if (totalColumns[i].hasOwnProperty('hidden') && totalColumns[i].hidden === true) {
-                        columns ++;
+                        columns++;
                     }
 
                 }
 
                 width = Math.round(100 / columns);
 
-                for (i = 0; i <  totalColumns.length; i ++ ) {
-                    console.log("set")
-                        totalColumns[i].width = width + "%";
+                for (i = 0; i < totalColumns.length; i++) {
+                    totalColumns[i].width = width + "%";
                 }
 
 
