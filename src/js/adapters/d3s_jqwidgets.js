@@ -527,7 +527,7 @@ define([
             //setColumnWidth();
 
 
-            this.config = (this.options) ? $.extend(true, this.config, this.options) : this.config;
+            this.config = (this.options) ? $.extend(true, this.config, this.tableOptions) : this.config;
             this.$container.jqxGrid(this.config);
 
             function setColumnWidth() {
