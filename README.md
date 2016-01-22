@@ -15,6 +15,7 @@ Instance the object and then pass this object into the method render()
   },
   + "options":{
         "hidden_columns":[] // array of column 's ids or column's subjects
+        "columns_order" :[] // specify the order of the columns
   }
 
 }
