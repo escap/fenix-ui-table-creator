@@ -10,5 +10,7 @@ define(function () {
 
             codeVisualization: "#label|$label ~|",
 
+            numberVisualization: 3
+
     };
 });

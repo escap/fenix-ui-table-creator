@@ -235,17 +235,70 @@ define([
                     trueIndex = rowIndexes[j]; //there could be different false virtual columns in different positions
                     datatypeTmp = this.aux.index2Datatypes[trueIndex];
 
+
+                    switch (true) {
+
+                        case this._isADatatypeCodeColumn(datatypeTmp)  :
+                            row[self.aux.ids[j]] = self._getVisualizationLabel(self.$originalData[i][trueIndex], trueIndex);
+                            break;
+
+                        case this._isADatatypeNumberColumn(datatypeTmp) :
+                            row[self.aux.ids[j]] = self._getVisualizationNumber(self.$originalData[i][trueIndex]);
+                            break
+
+                        default:
+                            row[this.aux.ids[j]] = (this.$originalData[i][trueIndex]) ? this.$originalData[i][trueIndex] : null;
+                            break;
+                    }
+
+                   /* }
                     if (this._isADatatypeCodeColumn(datatypeTmp)) {
                         row[self.aux.ids[j]] = self._getVisualizationLabel(self.$originalData[i][trueIndex], trueIndex);
-                    } else {
+                    }
+
+                    else {
                         row[this.aux.ids[j]] =
                             (this.$originalData[i][trueIndex]) ? this.$originalData[i][trueIndex] : null;
-                    }
+                    }*/
                     this._handleColumnsForJQwidgets(i, j);
+
+
                 }
+
                 this.$visualizationData[i] = row;
             }
+
+            if(this.$originalConfig.options.columns_order &&this.$originalConfig.options.columns_order.length >0)    {
+                this._reorderColumns();
+            }
+
             this._setDataForJQXGrid();
+        };
+
+
+        D3S_JQWidgets_Adapter.prototype._getVisualizationNumber = function (object)   {
+            return object.toFixed( this.numberVisualization)   ;
+        };
+
+
+        D3S_JQWidgets_Adapter.prototype._isADatatypeNumberColumn = function(datatypeTemp) {
+
+            return datatypeTemp === 'number'
+
+        }  ;
+
+        D3S_JQWidgets_Adapter.prototype._reorderColumns  =function() {
+            var result = []
+            for(var opt_ind= 0,options_length = this.$originalConfig.options.columns_order.length; opt_ind<options_length; opt_ind++) {
+                var key =  this.$originalConfig.options.columns_order[opt_ind] ;
+                for(var j= 0,columns_length = this.dataSource.columns.length; j<columns_length; j++) {
+                       if(key === this.dataSource.columns[j].datafield) {
+                           result.push (this.dataSource.columns[j]);
+                           break;
+                       }
+                }
+            }
+            this.dataSource.columns =(this.dataSource.columns.length === result.length) ? result: this.dataSource.columns;
         };
 
 
@@ -526,7 +579,6 @@ define([
 
             //setColumnWidth();
 
-
             this.config = (this.options) ? $.extend(true, this.config, this.tableOptions) : this.config;
             this.$container.jqxGrid(this.config);
 
@@ -550,7 +602,6 @@ define([
                     totalColumns[i].width = width + "%";
                 }
 
-
             }
         };
 
@@ -567,6 +618,7 @@ define([
             this.$visualizationData = [];
             this.$codelist = ($.isEmptyObject(this.codelist)) ? null : this.codelist;
             this.codeVisualization = C.codeVisualization || DC.codeVisualization;
+            this.numberVisualization = C.numberVisualization || DC.numberVisualization;
         };
 
 
