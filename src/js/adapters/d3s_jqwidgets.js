@@ -250,25 +250,15 @@ define([
                             row[this.aux.ids[j]] = (this.$originalData[i][trueIndex]) ? this.$originalData[i][trueIndex] : null;
                             break;
                     }
-
-                   /* }
-                    if (this._isADatatypeCodeColumn(datatypeTmp)) {
-                        row[self.aux.ids[j]] = self._getVisualizationLabel(self.$originalData[i][trueIndex], trueIndex);
-                    }
-
-                    else {
-                        row[this.aux.ids[j]] =
-                            (this.$originalData[i][trueIndex]) ? this.$originalData[i][trueIndex] : null;
-                    }*/
                     this._handleColumnsForJQwidgets(i, j);
-
-
                 }
 
                 this.$visualizationData[i] = row;
             }
 
-            if(this.$originalConfig.options.columns_order &&this.$originalConfig.options.columns_order.length >0)    {
+            if(this.$originalConfig.options &&
+                this.$originalConfig.options.columns_order &&
+                this.$originalConfig.options.columns_order.length >0)    {
                 this._reorderColumns();
             }
 
@@ -361,9 +351,7 @@ define([
             var self = this;
 
             if (this._checkIfNotExistsCodeInMap(indexColumn, rowData)) {
-                /*
-                 if (this.$codelist == null) {
-                 */
+
                 if (this._areLabelsIntoVirtualColumn()) {
 
                     this.aux.code2label[indexColumn][rowData[indexColumn]] = rowData[this.aux.indexCodeColumn2indexVirtualColumn[indexColumn]];
