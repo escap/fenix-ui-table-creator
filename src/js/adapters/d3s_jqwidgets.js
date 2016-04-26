@@ -267,7 +267,8 @@ define([
 
 
         D3S_JQWidgets_Adapter.prototype._getVisualizationNumber = function (object)   {
-            return object.toFixed( this.numberVisualization)   ;
+            return (object && object!= null )?
+                object.toFixed( this.numberVisualization)   :null;
         };
 
 
