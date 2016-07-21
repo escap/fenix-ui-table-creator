@@ -3,7 +3,7 @@ define([
     'loglevel',
     'jquery',
     'underscore',
-    'fx-olap/start',
+    'fx-table/start',
     'fx-filter/start',
     'fx-common/pivotator/fenixtool',
     'text!test/models/UNECA_Education.json',

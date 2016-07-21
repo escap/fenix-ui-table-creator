@@ -3,10 +3,10 @@ define([
     'jquery',
     'underscore',
     'loglevel',
-    'fx-olap/config/errors',
-    'fx-olap/config/events',
-    'fx-olap/config/config',
-    'fx-olap/config/renderers/bootstrap-table',
+    'fx-table/config/errors',
+    'fx-table/config/events',
+    'fx-table/config/config',
+    'fx-table/config/renderers/bootstrap-table',
     'bootstrap-table',
     'amplify'
 ], function ($, _, log, ERR, EVT, C, Pivotator, Config) {

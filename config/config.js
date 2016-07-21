@@ -4,7 +4,7 @@ define(function () {
 
     'use strict';
 
-    var selectorPath = "fx-olap/renderers/";
+    var selectorPath = "fx-table/renderers/";
 
     return {
 

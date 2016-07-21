@@ -3,12 +3,12 @@ define(function () {
 
         paths: {
 
-            'fx-olap/start': './start',
-            'fx-olap/renderers' : './renderers',
-            'fx-olap/nls': '../../nls',
-            'fx-olap/config': '../../config',
-            'fx-olap/html': '../../html',
-            'fx-olap/js' : "./",
+            'fx-table/start': './start',
+            'fx-table/renderers' : './renderers',
+            'fx-table/nls': '../../nls',
+            'fx-table/config': '../../config',
+            'fx-table/html': '../../html',
+            'fx-table/js' : "./",
 
             'underscore': '{FENIX_CDN}/js/underscore/1.8.0/underscore.min',
             'jquery': '{FENIX_CDN}/js/jquery/2.1.1/jquery.min',

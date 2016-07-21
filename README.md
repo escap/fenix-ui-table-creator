@@ -7,7 +7,7 @@ fenix-ui-olap
 
 
 Requirejs import : 
-define(['fx-olap/start'], function (OlapCreator) {
+define(['fx-table/start'], function (OlapCreator) {
 ...
 
 General principe:

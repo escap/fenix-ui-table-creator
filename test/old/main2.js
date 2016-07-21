@@ -81,7 +81,7 @@ require(['text!config/dataTest.json',
 	console.log(eval(display_rendereres))
 dataConfig.renderer=function_rendererers;
 dataConfig.rendererDisplay=eval(display_rendereres)
-   // $("#fx-olap-ui").pivotUI(dataTest2, dataConfig);
+   // $("#fx-table-ui").pivotUI(dataTest2, dataConfig);
  /*   console.log(dataTest1_1);
 	console.log(dataTest1_2);*/
 $("#pivot1").pivotFin(dataTest1_1, dataConfig,true,"en");
