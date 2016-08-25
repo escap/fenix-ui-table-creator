@@ -1,36 +1,50 @@
 {
-  "name": "fenix-ui-olap",
-  "version": "0.0.1",
-  "description": "Component to browse FENIX resources ",
-  "main": "index.html",
+  "name": "fenix-ui-table-creator",
+  "version": "2.0.0",
+  "description": "FENIX table component creator",
+  "homepage": "https://github.com/FENIX-Platform/fenix-ui-table-creator",
+  "author": "FENIX Development Team",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:FENIX-Platform/fenix-ui-table-creator.git"
+  },
+  "bugs": {
+    "url": "https://github.com/FENIX-Platform/fenix-ui-table-creator/issues"
+  },
+  "license": "GPL3",
+  "keywords": [
+    "fenix",
+    "platform"
+  ],
+  "dependencies": {
+    "jquery": "2.1.0",
+    "backbone": "1.1.2",
+    "backbone.layoutmanager": "0.9.5",
+    "bootstrap": "3.2.0",
+    "underscore": "1.7.0",
+    "nprogress": "0.1.6",
+    "requirejs": "2.1.14",
+    "handlebars": "2.0.0",
+    "jstree": "3.0.8"
+  },
+  "devDependencies": {
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/FENIX-Platform/fenix-ui-olap.git"
-  },
-  "keywords": [
-    "FENIX"
-  ],
-  "author": "FENIX Development Team",
-  "license": "GPL3",
-  "bugs": {
-    "url": "https://github.com/FENIX-Platform/fenix-ui-olap/issues"
-  },
-  "homepage": "https://github.com/FENIX-Platform/fenix-ui-olap",
-  "dependencies": {
-    "jquery": "~2.1.0",
-    "bootstrap": "~3.2.0",
-    "requirejs": "~2.1.14"
-  },
-  "devDependencies": {
-    "grunt": "~0.4.5",
-    "grunt-cli": "~0.1.13",
-    "grunt-contrib-uglify": "~0.8.0",
-    "grunt-contrib-concat": "~0.5.1",
-    "grunt-contrib-clean": "~0.6.0",
-    "grunt-contrib-jshint": "~0.11.0",
-    "grunt-contrib-copy": "~0.8.0"
+  "main": "src/js/start.js",
+  "config": {
+    "sections": [
+      "home",
+      "view",
+      "analysis",
+      "data management",
+      "about"
+    ],
+    "langs": [
+      "en",
+      "fr",
+      "es"
+    ]
   }
 }
