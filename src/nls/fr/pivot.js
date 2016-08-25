@@ -1,6 +1,7 @@
-define({
-
-	root: {
+if (typeof define !== 'function') {
+	var define = require('amdefine')(module);
+}
+define( {
 	    renderError: "An error occurred rendering the PivotTable results.",
 	    computeError: "An error occurred computing the PivotTable results.",
 	    uiRenderError: "An error occurred rendering the PivotTable UI.",
@@ -9,9 +10,7 @@ define({
 	    tooMany: "(too many to list)",
 	    filterResults: "Filter results",
 	    totals: "Totals", vs: "vs", by: "by",
-    	months: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
-	    days: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
-	}	,
-	en: true,
-	fr: true
+    	months: ["Jan", "Fev", "Mar", "Avr", "Mai", "Juin", "Juil", "Aout", "Sept", "Oct", "Nov", "Dec"],
+	    days: ["Dim", "Lun", "Mar", "Mer", "Jeu", "Ven", "Sam"]
+	
 });

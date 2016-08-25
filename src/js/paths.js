@@ -1,3 +1,6 @@
+if (typeof define !== 'function') {
+    var define = require('amdefine')(module);
+}
 define(function () {
     var config = {
 
@@ -5,9 +8,9 @@ define(function () {
 
             'fx-table/start': './start',
             'fx-table/renderers' : './renderers',
-            'fx-table/nls': '../../nls',
-            'fx-table/config': '../../config',
-            'fx-table/html': '../../html',
+            'fx-table/nls': '../nls',
+            'fx-table/config': '../config',
+            'fx-table/html': '../html',
             'fx-table/js' : "./",
 
             'underscore': '{FENIX_CDN}/js/underscore/1.8.0/underscore.min',
