@@ -1,48 +1,59 @@
-/*global define*/
 define(function () {
-
     var config = {
 
         paths: {
-            'fx-t-c/start': './start',
-            'fx-t-c/html': '../html',
-            'fx-t-c/config': '../../config',
-            'fx-t-c/adapters': './adapters',
-            'fx-t-c/templates': './templates',
-            // third party libs
-            text: '{FENIX_CDN}/js/requirejs/plugins/text/2.0.12/text',
-            //jquery: "//ajax.googleapis.com/ajax/libs/jquery/2.0.0/jquery.min",
-            jqwidgets: '{FENIX_CDN}/js/jqwidgets/3.1/jqx-light',//,
-            'jqxmenu': '{FENIX_CDN}/js/jqwidgets/3.1/jqxmenu',
-            'jqxgrid.pager': '{FENIX_CDN}/js/jqwidgets/3.1/jqxgrid.pager',
-           'jqxgrid.filter': '{FENIX_CDN}/js/jqwidgets/3.1/jqxgrid.filter',
-           'jqxgrid.grouping': '{FENIX_CDN}/js/jqwidgets/3.1/jqxgrid.grouping',
 
-            underscore: "{FENIX_CDN}/js/underscore/1.7.0/underscore.min",
-            moment: "{FENIX_CDN}/js/moment/2.9.0/moment.min",
-            amplify: "{FENIX_CDN}/js/amplify/1.1.2/amplify.min"
+            'fx-table/start': './start',
+            'fx-table/renderers' : './renderers',
+            'fx-table/nls': '../../nls',
+            'fx-table/config': '../../config',
+            'fx-table/html': '../../html',
+            'fx-table/js' : "./",
+
+            'underscore': '{FENIX_CDN}/js/underscore/1.8.0/underscore.min',
+            'jquery': '{FENIX_CDN}/js/jquery/2.1.1/jquery.min',
+            'bootstrap': '{FENIX_CDN}/js/bootstrap/3.2/js/bootstrap.min',
+            'text': '{FENIX_CDN}/js/requirejs/plugins/text/2.0.12/text',
+            'i18n': '{FENIX_CDN}/js/requirejs/plugins/i18n/2.0.4/i18n',
+            'amplify': '{FENIX_CDN}/js/amplify/1.1.2/amplify.min',
+            handlebars: '{FENIX_CDN}/js/handlebars/2.0.0/handlebars',
+            gt_msg: "{FENIX_CDN}/js/sigma.grid/2.4/gt_msg_en",
+            gt_msg_grid: "{FENIX_CDN}/js/sigma.grid/2.4/gt_grid_all",
+			//gt_msg_grid: "./dist/gt_all",
+				
+		//jdatagrid:"http://www.jeasyui.com/easyui/jquery.easyui.min",
+            jdatagrid:"./dist/easyui",
+            pivotgrid:"./dist/easyui/pivotgrid",
+			sortable : '{FENIX_CDN}/js/sortable/1.4.2/Sortable.min',
+			localpagination:'localpagination',
+
+            //Bootstrap table renderers
+            "bootstrap-table" : '{FENIX_CDN}/js/bootstrap-table/1.10.1/dist/bootstrap-table.min'
 
         },
 
         shim: {
-            "jqwidgets": {
-                "deps": ["jquery"]
+
+            "jqueryui": {
+                deps: ["jquery"]
             },
-            "jqxmenu": {
-                "deps": ["jqwidgets"]
-            },
-            "jqxgrid.pager": {
-                "deps": ["jqwidgets"]
-            },
-            "jqxgrid.filter": {
-                "deps": ["jqwidgets"]
-            },
-            "jqxgrid.grouping": {
-                "deps": ["jqwidgets"]
-            },
+
             "amplify": {
-                "deps": ["jquery"]
-            }
+                deps: ['jquery'],
+                exports: 'amplify'
+            },
+
+            "gt_msg": {
+                //exports: 'Sigma',
+                deps: ['jquery']
+            },
+
+            "gt_msg_grid": ['jquery', 'gt_msg'],
+			pivotgrid:['jquery',"jdatagrid"],
+			jdatagrid:['jquery'],
+			localpagination:['jdatagrid']
+
+            //"HPivot": ['jquery','jqueryui'],
         }
     };
 

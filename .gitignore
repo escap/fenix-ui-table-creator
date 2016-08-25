@@ -3,3 +3,4 @@ npm.log
 npm-debug.log
 /.idea/
 *.iml
+*.log
