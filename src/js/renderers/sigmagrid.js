@@ -231,7 +231,6 @@ idj++;
 
         this.$el.append("<div id='" + this.id + "_" + this.id+idj + "' class='datagrid' />");
 		    //console.log("gridOption", gridOption)
-
          mygrid = new Sigma.Grid(gridOption);
         	//Sigma.Util.onLoad(
 
