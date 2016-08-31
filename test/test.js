@@ -2,7 +2,7 @@
 
 var pathProjectRoot = "../../../";
 var projectRoot = "./";
-var submoduleRoot = '../../submodules/fenix-ui-olap/';
+var submoduleRoot = '../../submodules/fenix-ui-table-creator/';
 
 require.config({
 	config: {
@@ -37,7 +37,7 @@ require([
 	"compilerPaths",
 	"commonPaths",
 	"filterPaths",
-	"olapPaths"
+	"tablePaths"
 ], function (Compiler, Common, Filter, Olap ) {
 
 	'use strict';
@@ -51,7 +51,7 @@ require([
 	filterConfig.baseUrl = submodules_path + 'fenix-ui-filter/src/js';
 
 	var olapConfig = Olap;
-	olapConfig.baseUrl = submodules_path + 'fenix-ui-olap/src/js';
+	olapConfig.baseUrl = submodules_path + 'fenix-ui-table-creator/src/js';
 
 	Compiler.resolve([commonConfig, filterConfig, olapConfig],
 		{
