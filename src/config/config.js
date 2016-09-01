@@ -1,12 +1,6 @@
-if (typeof define !== 'function') {
-    var define = require('amdefine')(module);
-}
-
 define(function () {
 
     'use strict';
-
-    var selectorPath = "fx-table/renderers/";
 
     return {
 
@@ -16,10 +10,7 @@ define(function () {
 
         pluginRegistry: {
             'olap': {
-                path: selectorPath + 'sigmagrid'
-            },
-            'grid' : {
-                path: selectorPath + 'bootstrap-table'
+                path: 'sigmagrid'
             }
         }
     }

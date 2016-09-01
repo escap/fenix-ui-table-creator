@@ -1,26 +1,21 @@
-if (typeof define !== 'function') {
-    var define = require('amdefine')(module);
-}
 define([
     'jquery',
-    'require',
     'underscore',
     'loglevel',
-    'fx-table/config/errors',
-    'fx-table/config/events',
-    'fx-table/config/config',
-    'fx-common/pivotator/start',
-    'fx-common/pivotator/fenixtool',
-    'handlebars',
-    'amplify'
-], function ($, require, _, log, ERR, EVT, C, Pivotator, FenixTool, Handlebars) {
+    '../config/errors',
+    '../config/events',
+    '../config/config',
+    'fenix-ui-pivotator',
+    'fenix-ui-pivotator-utils'
+], function ($, _, log, ERR, EVT, C, Pivotator, FenixTool) {
+
     'use strict';
+
+    var selectorPath = "./renderers/";
 
     function Olap(o) {
         log.info("FENIX Olap");
         log.info(o);
-
-        this._registerHandlebarsHelpers();
 
         $.extend(true, this, C, {initial: o});
 
@@ -31,7 +26,7 @@ define([
         if (valid === true) {
             this._initVariables();
             this._bindEventListeners();
-            this._preloadPluginScript();
+            this._renderOlap();
             return this;
         } else {
             log.error("Impossible to create Olap");
@@ -165,24 +160,10 @@ define([
         else {
             log.error('Impossible to find path configuration for "' + name + ' plugin".');
         }
-        return path;
+        return selectorPath + path;
     };
 
-    Olap.prototype._preloadPluginScript = function () {
-        var paths = [];
-        paths.push(this._getPluginPath(this.type));
-        log.info("olap path to load");
-        log.info(paths);
-        //Async load of plugin js source
-        require(paths, _.bind(this._preloadPluginScriptSuccess, this));
-    };
-
-    Olap.prototype._preloadPluginScriptSuccess = function () {
-        log.info('Plugin script loaded successfully');
-        this._renderOlap();
-    };
-
-    Olap.prototype._renderOlap = function () {
+     Olap.prototype._renderOlap = function () {
         var Renderer = this._getRenderer(this.type);
 //console.log("_renderOlap",this.pivotatorConfig,"initi",this.initial)
         var myPivotatorConfig = $.extend(true, {}, this.initial, this.fenixTool.parseInput(this.model.metadata.dsd, this.pivotatorConfig));
@@ -234,14 +215,5 @@ define([
         }
     };
 
-    //Utils
-    Olap.prototype._registerHandlebarsHelpers = function () {
-
-        var self = this;
-
-        Handlebars.registerHelper('i18n', function (keyword) {
-            return typeof keyword === 'object' ? keyword[self.lang.toUpperCase()] : "";
-        });
-    };
     return Olap;
 });
