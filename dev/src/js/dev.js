@@ -19,6 +19,7 @@ define([
     };
 
     function Dev() {
+
         log.setLevel('silent');
         this.fenixTool = new FenixTool();
         this.start();

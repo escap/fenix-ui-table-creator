@@ -3,7 +3,7 @@ define(function () {
     var Sigma = {};
 
     Sigma.Msg=Sigma.Msg || {};
-    SigmaMsg=Sigma.Msg;
+    var SigmaMsg=Sigma.Msg;
 
     Sigma.Msg.Grid = Sigma.Msg.Grid || {};
 
