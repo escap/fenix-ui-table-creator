@@ -6,9 +6,17 @@ define([
     'fx-table/start',
     'fx-filter/start',
     'fx-common/pivotator/fenixtool',
-    'text!test/models/UNECA_Education.json',
-    'test/models/filter-interaction'
-], function (log, $, _, OlapCreator, Filter, FenixTool, ModelFX, FilterModel) {
+    //'text!http://ec.europa.eu/eurostat/SDMX/diss-web/rest/data/cdh_e_fos/..PC.FOS1./?startperiod=2005&endPeriod=2011',
+	/*
+	'text!http://ec.europa.eu/eurostat/SDMX/diss-web/rest/data/cdh_e_fos/..PC.FOS1.BE/?startperiod=2005&endPeriod=2011',
+	'text!http://ec.europa.eu/eurostat/SDMX/diss-web/rest/datastructure/ESTAT/DSD_cdh_e_fos',*/
+	
+    'text!test/models/XML.xml',
+	'text!test/models/DSD.xml',
+    'test/models/filter-interaction',
+	 'text!test/models/UNECA_GDP.json'
+	
+], function (log, $, _, OlapCreator, Filter, FenixTool, ModelSDMX,SDMXDSD, FilterModel,Exemple) {
 	
 	/*[16:24:54] Daniele  Salvatore: Richiesta Dataset con label:
 [16:25:29] Daniele  Salvatore: URL:  http://fenixservices.fao.org//d3s/processes/:uid_dataset
@@ -49,9 +57,8 @@ UNECA_ExpenditureGDPCostant
 UNECA_ExpenditureGDPCurrent
 UNECA_GDP_USD*/
 
-
-
-    'use strict';
+ 'use strict';
+	
 	var Model;
 	
     var s = {
@@ -61,9 +68,14 @@ UNECA_GDP_USD*/
     };
 
     function Test() {
+	
+	
         this.fenixTool = new FenixTool();
-		Model=JSON.parse(ModelFX);
-		console.log("Model",Model)
+		
+		
+		Model=this.fenixTool.sdmxToFenix(ModelSDMX,SDMXDSD)
+		//console.log(Model)
+		//Model=JSON.parse(Model);
     }
 
     Test.prototype.start = function () {
@@ -76,7 +88,7 @@ UNECA_GDP_USD*/
         //create filter configuration
         var itemsFromFenixTool = this.fenixTool.toFilter(Model);
         //FilterModel contains static filter selectors, e.g. show code, show unit
-           var  items = $.extend(true, {}, FilterModel, itemsFromFenixTool);
+        var  items = $.extend(true, {}, FilterModel, itemsFromFenixTool);
 
         log.trace("Filter configuration from FenixTool", items);
 
@@ -142,7 +154,7 @@ UNECA_GDP_USD*/
 
             log.trace("Update chart");
             log.trace(config);
-			//console.log("config2",config)
+//console.log("config2",config)
             this.olap.update(config);
         }, this));
 
@@ -158,8 +170,6 @@ UNECA_GDP_USD*/
         return config;
 
     };
-	
-	 
 
     Test.prototype._printOlapConfiguration = function () {
 

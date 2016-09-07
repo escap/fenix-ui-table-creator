@@ -44,6 +44,8 @@ define([
         this.olap.model = this.pivotator.pivot(this.model, config);
         this.olap.update(config);
     };
+	
+	
 
     /**
      * pub/sub

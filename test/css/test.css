@@ -3,6 +3,8 @@
 /*#0076ff*/
 /* Boostrap Queries */
 /* Fenix Icons */
+/*.gt-freeze-div .gt-head-table tbody tr td{background-color:red}
+*/
 .fx-icon, [data-selector-time] [data-action="previous"] span, [data-selector-time] [data-action="next"] span {
   height: 15px;
   width: 15px;

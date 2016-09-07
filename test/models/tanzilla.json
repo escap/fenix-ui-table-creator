@@ -1,0 +1,143 @@
+{
+	"metadata": {
+		"version": "54755206495285245507650166536412468330",
+		"dsd": {
+			"rid": "63_1655",
+			"contextSystem": "D3P",
+			"columns": [{
+				"dataType": "code",
+				"title": {
+					"EN": "Country"
+				},
+				"domain": {
+					"codes": [{
+						"version": "2016",
+						"idCodeList": "crs_recipients",
+						"extendedName": {
+							"EN": "OECD Recipients"
+						}
+					}]
+				},
+				"key": true,
+				"id": "recipientcode"
+			}, {
+				"dataType": "code",
+				"title": {
+					"EN": "Donor"
+				},
+				"domain": {
+					"codes": [{
+						"version": "2016",
+						"idCodeList": "crs_donors",
+						"extendedName": {
+							"EN": "OECD Donors"
+						}
+					}]
+				},
+				"key": true,
+				"id": "donorcode"
+			}, {
+				"dataType": "number",
+				"title": {
+					"EN": "Value"
+				},
+				"subject": "value",
+				"key": false,
+				"id": "value"
+			}, {
+				"dataType": "code",
+				"title": {
+					"EN": "Measurement unit"
+				},
+				"domain": {
+					"codes": [{
+						"version": "2016",
+						"idCodeList": "crs_units",
+						"extendedName": {
+							"EN": "OECD Units"
+						}
+					}]
+				},
+				"subject": "um",
+				"key": false,
+				"id": "unitcode"
+			}, {
+				"dataType": "text",
+				"title": {
+					"EN": "Country"
+				},
+				"virtual": false,
+				"transposed": false,
+				"key": false,
+				"id": "recipientcode_EN"
+			}, {
+				"dataType": "text",
+				"title": {
+					"EN": "Donor"
+				},
+				"virtual": false,
+				"transposed": false,
+				"key": false,
+				"id": "donorcode_EN"
+			}, {
+				"dataType": "text",
+				"title": {
+					"EN": "Measurement unit"
+				},
+				"virtual": false,
+				"transposed": false,
+				"key": false,
+				"id": "unitcode_EN"
+			}, {
+				"dataType": "text",
+				"title": {
+					"EN": "Indicator"
+				},
+				"domain": {
+					"codes": [{
+						"idCodeList": "adam_processes",
+						"extendedName": {
+							"EN": "Adam Processes"
+						}
+					}]
+				},
+				"id": "indicator"
+			}],
+			"cache": {
+				"storage": "postgres"
+			}
+		},
+		"uid": "D3P_R_3",
+		"meContent": {
+			"resourceRepresentationType": "dataset",
+			"resourceRepresentationTypeLabel": {
+				"EN": "Dataset"
+			}
+		}
+	},
+	"data": [
+		["625", "22", 1.6654191, "million_usd", "Afghanistan", "Luxembourg", "Million USD", "Total ODA"],
+		["625", "3", 14.286173999999999, "million_usd", "Afghanistan", "Denmark", "Million USD", "Total ODA"],
+		["625", "7", 79.5921884, "million_usd", "Afghanistan", "Netherlands", "Million USD", "Total ODA"],
+		["625", "1", 15.60063088, "million_usd", "Afghanistan", "Austria", "Million USD", "Total ODA"],
+		["625", "963", 18.02360247, "million_usd", "Afghanistan", "UNICEF", "Million USD", "Total ODA"],
+		["625", "5", 75.969279858, "million_usd", "Afghanistan", "Germany", "Million USD", "Total ODA"],
+		["625", "974", 0.7743089999999999, "million_usd", "Afghanistan", "UNFPA", "Million USD", "Total ODA"],
+		["625", "18", 12.526782419999998, "million_usd", "Afghanistan", "Finland", "Million USD", "Total ODA"],
+		["625", "8", 41.248972540000004, "million_usd", "Afghanistan", "Norway", "Million USD", "Total ODA"],
+		["625", "21", 5.0668602, "million_usd", "Afghanistan", "Ireland", "Million USD", "Total ODA"],
+		["625", "701", 0.7194619999999999, "million_usd", "Afghanistan", "Japan", "Million USD", "Total ODA"],
+		["625", "2", 3.6697861299999994, "million_usd", "Afghanistan", "Belgium", "Million USD", "Total ODA"],
+		["625", "301", 22.90747229, "million_usd", "Afghanistan", "Canada", "Million USD", "Total ODA"],
+		["625", "4", 1.2523051700000003, "million_usd", "Afghanistan", "France", "Million USD", "Total ODA"],
+		["625", "6", 22.824078200000002, "million_usd", "Afghanistan", "Italy", "Million USD", "Total ODA"],
+		["625", "801", 9.0029708, "million_usd", "Afghanistan", "Australia", "Million USD", "Total ODA"],
+		["625", "11", 14.6601979, "million_usd", "Afghanistan", "Switzerland", "Million USD", "Total ODA"],
+		["625", "12", 79.54089668, "million_usd", "Afghanistan", "United Kingdom", "Million USD", "Total ODA"],
+		["625", "10", 25.271476305, "million_usd", "Afghanistan", "Sweden", "Million USD", "Total ODA"],
+		["625", "302", 26.465, "million_usd", "Afghanistan", "United States", "Million USD", "Total ODA"],
+		["625", "918", 107.14288299999998, "million_usd", "Afghanistan", "EU Institutions", "Million USD", "Total ODA"],
+		["625", "50", 5.9184082, "million_usd", "Afghanistan", "Spain", "Million USD", "Total ODA"]
+	],
+	"size": 22
+}

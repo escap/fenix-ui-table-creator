@@ -102,7 +102,7 @@ require([
 	// Bootstrap the application
 	require([
 		'loglevel',
-		'test/js/test',
+		'test/js/testsdmx',
 		'domReady!'
 	], function (log, Test) {
 
@@ -113,6 +113,7 @@ require([
 		log.info("===== Start testing:...");
 
 		Test.start();
+
 		log.info("===== End testing");
 
 	});

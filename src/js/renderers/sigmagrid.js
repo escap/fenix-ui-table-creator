@@ -114,9 +114,12 @@ var idj=0;
         //amplify.subscribe(this._getEventName(EVT.SELECTOR_READY), this, this._onSelectorReady);
 
     };
+	Sigmagrid.prototype._exportCSV=function(dataset){console.log("dataset a exporter",dataset)}
 
     Sigmagrid.prototype._renderSigmagrid = function (obj) {
 		//console.log("_renderSigmagrid", obj)
+		
+		
         var model = this.model,
             dsOption = {fields: [], recordType: 'array', data: model.data},
             colsOption = [],
@@ -135,6 +138,7 @@ var idj=0;
                     id: model.rowname[i].id,
                     header: model.rowname[i].title[this.lang],
                     frozen: true,
+					
 					//hidden:b,
 					hidden:hidden2.hasOwnProperty(model.rowname[i].id),
 					//hidden:hidden2.hasOwnProperty(model.rowname[i].id),
@@ -180,11 +184,9 @@ var idj=0;
 							var titleV;
 							if(v==0){titleV="value"}else{titleV=obj.values[v].replace(/.*\|\*/g, "")/*.replace("\W", "_")*/}
                             colsOption.push({
-                                id: colstemp[i][j].id.replace(/\W/g, "_") + "_" +obj.values[v].replace(/\|\*/g, "_").replace(/\W/g, "_")
-								,
+                                id: colstemp[i][j].id.replace(/\W/g, "_") + "_" +obj.values[v].replace(/\|\*/g, "_").replace(/\W/g, "_"),
                                 header: colstempL[i][j].id.replace(/_/g, "\n") + "\n" + titleV
-
-                            });
+								});
                             //dsOption.fields.push({name: colstemp[i][j].id + "_" + obj.values[v]});
                         dsOption.fields.push({name: colstemp[i][j].id.replace(/\W/g, "_") + "_" +obj.values[v].replace(/\|\*/g, "_").replace(/\W/g, "_")});
 
@@ -210,12 +212,12 @@ var idj=0;
 
         }
 
-
+//console.log(this._createOlapHeader(model, obj, colstemp));
 idj++;
         var gridOption = $.extend(true, {}, sigmagridConfig, {
             id: this.id + "_" + this.id+idj,
             dataset: dsOption,
-         //   customHead : 'myHead1',
+           // customHead : 'myCustomHead',
             columns: colsOption,
             container: this.id + "_" + this.id+idj
         });
@@ -233,8 +235,12 @@ idj++;
 		    //console.log("gridOption", gridOption)
          mygrid = new Sigma.Grid(gridOption);
         	//Sigma.Util.onLoad(
-
+console.log("test",mygrid.tools)
+//mygrid.tools.csvTool.onclick=function(event,grid,e){console.log("GRID",Sigma.activeGrid.dataset);}
         Sigma.Grid.render(mygrid)();
+	   mygrid.tools.csvTool.onclick=function(){
+		   var pivotator2=new Pivotator();
+		   pivotator2.exportCSV(Sigma.activeGrid.dataset);}
 		//mygrid.reload();
 		//);
 
@@ -244,8 +250,8 @@ idj++;
 
     };
 
+	
     Sigmagrid.prototype._createOlapHeader = function (model, obj, colstemp) {
-
         var headerModel = {};
         headerModel.rowname = model.rowname.slice(0);
         headerModel.rowSpan = obj.columns.length;
