@@ -41,6 +41,8 @@ define([
 
     // API
     Olap.prototype.update = function (config) {
+		config= $.extend(true, {}, this.initial, this.fenixTool.parseInput(this.model.metadata.dsd,config));
+		
         this.olap.model = this.pivotator.pivot(this.model, config);
         this.olap.update(config);
     };

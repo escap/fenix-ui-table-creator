@@ -62,7 +62,6 @@ var idj=0;
     };
 
     Sigmagrid.prototype.update = function (config) {
-
         this._renderSigmagrid(config);
 
     };
@@ -114,10 +113,10 @@ var idj=0;
         //amplify.subscribe(this._getEventName(EVT.SELECTOR_READY), this, this._onSelectorReady);
 
     };
-	Sigmagrid.prototype._exportCSV=function(dataset){console.log("dataset a exporter",dataset)}
+//	Sigmagrid.prototype._exportCSV=function(dataset){console.log("dataset a exporter",dataset)}
 
     Sigmagrid.prototype._renderSigmagrid = function (obj) {
-		//console.log("_renderSigmagrid", obj)
+	//	console.log("_renderSigmagrid", obj)
 		
 		
         var model = this.model,
@@ -235,7 +234,6 @@ idj++;
 		    //console.log("gridOption", gridOption)
          mygrid = new Sigma.Grid(gridOption);
         	//Sigma.Util.onLoad(
-console.log("test",mygrid.tools)
 //mygrid.tools.csvTool.onclick=function(event,grid,e){console.log("GRID",Sigma.activeGrid.dataset);}
         Sigma.Grid.render(mygrid)();
 	   mygrid.tools.csvTool.onclick=function(){
