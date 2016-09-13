@@ -178,7 +178,7 @@ var idj=0;
                 //for(var v in optGr.VALS){
                 if (i == colstemp.length - 1) {
                     for (var j in colstemp[i]) {
-                        console.log("test",obj.values)
+                        //console.log("test",obj.values)
                         for (var v in obj.values) {
 							var titleV;
 							//if(v==0){titleV="value"}else
