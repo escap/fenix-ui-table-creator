@@ -178,10 +178,11 @@ var idj=0;
                 //for(var v in optGr.VALS){
                 if (i == colstemp.length - 1) {
                     for (var j in colstemp[i]) {
-                        //console.log("test",optGr.VALS)
+                        console.log("test",obj.values)
                         for (var v in obj.values) {
 							var titleV;
-							if(v==0){titleV="value"}else{titleV=obj.values[v].replace(/.*\|\*/g, "")/*.replace("\W", "_")*/}
+							//if(v==0){titleV="value"}else
+							{titleV=obj.values[v].replace(/.*\|\*/g, "")/*.replace("\W", "_")*/}
                             colsOption.push({
                                 id: colstemp[i][j].id.replace(/\W/g, "_") + "_" +obj.values[v].replace(/\|\*/g, "_").replace(/\W/g, "_"),
                                 header: colstempL[i][j].id.replace(/_/g, "\n") + "\n" + titleV
