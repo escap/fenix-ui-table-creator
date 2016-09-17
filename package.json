@@ -1,6 +1,6 @@
 {
   "name": "fenix-ui-table-creator",
-  "version": "3.0.0-beta.1",
+  "version": "3.0.0-beta.3",
   "description": "FENIX table component creator",
   "homepage": "https://github.com/FENIX-Platform/fenix-ui-table-creator",
   "author": "FENIX Development Team",
@@ -19,18 +19,24 @@
   "dependencies": {
     "fenix-ui-pivotator": "^1.0.0-beta.4",
     "fenix-ui-pivotator-utils": "^1.0.0-beta.1",
-    "handlebars": "^2.0.0",
     "jquery": "^2.1.0",
     "loglevel": "^1.4.1",
     "underscore": "^1.7.0"
   },
   "devDependencies": {
-    "jstree": "^3.0.8",
+    "bootstrap-loader": "^2.0.0-beta.11",
+    "bootstrap-sass": "^3.3.7",
     "chai": "^3.5.0",
-    "nprogress": "^0.1.6",
     "clean-webpack-plugin": "^0.1.10",
-    "fenix-ui-filter": "^3.0.0-beta.6",
-    "handlebars-loader": "^1.3.0",
+    "css-loader": "^0.25.0",
+    "extract-text-webpack-plugin": "^1.0.1",
+    "fenix-ui-filter": "^3.0.0-beta.7",
+    "file-loader": "^0.9.0",
+    "handlebars": "^4.0.5",
+    "handlebars-loader": "^1.4.0",
+    "html-loader": "^0.4.4",
+    "html-webpack-plugin": "^2.22.0",
+    "image-webpack-loader": "^2.0.0",
     "jshint": "^2.9.3",
     "jshint-loader": "^0.8.3",
     "json-loader": "^0.5.4",
@@ -42,6 +48,11 @@
     "karma-mocha": "^1.1.1",
     "karma-webpack": "^1.8.0",
     "mocha": "^3.0.2",
+    "node-sass": "^3.10.0",
+    "resolve-url-loader": "^1.6.0",
+    "sass-loader": "^4.0.2",
+    "style-loader": "^0.13.1",
+    "url-loader": "^0.5.7",
     "webpack": "^1.13.2",
     "webpack-dev-server": "^1.15.1"
   },
@@ -55,19 +66,5 @@
     "w-build:demo": "SET NODE_ENV=demo&& webpack --display-error-details",
     "w-dev": "SET NODE_ENV=develop&& webpack-dev-server --display-error-details --progress --color --content-base dev  --inline --hot"
   },
-  "main": "dist/fenix-ui-table-creator.min.js",
-  "config": {
-    "sections": [
-      "home",
-      "view",
-      "analysis",
-      "data management",
-      "about"
-    ],
-    "langs": [
-      "en",
-      "fr",
-      "es"
-    ]
-  }
+  "main": "dist/fenix-ui-table-creator.min.js"
 }

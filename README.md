@@ -1,13 +1,13 @@
 [![Stories in Ready](https://badge.waffle.io/FENIX-Platform/fenix-ui-olap.png?label=ready&title=Ready)](https://waffle.io/FENIX-Platform/fenix-ui-olap)
-fenix-ui-olap
+fenix-ui-table
 =============
 
 
-#FENIX UI OLAP
+#FENIX UI TABLE
 
 
 Requirejs import : 
-define(['fx-table/start'], function (OlapCreator) {
+define(['fx-table-creator'], function (TableCreator) {
 ...
 
 General principe:
@@ -18,7 +18,7 @@ From a ressource Fenix (FX in this document) and some extra-configurations provi
 
 
 Constructor :
-   this.olap = new OlapCreator(config);
+   this.olap = new TableCreator(config);
 with config is a json Object with these fields :
 
 
@@ -93,7 +93,7 @@ el:"#result"
 }
 
 
-   this.olap = new OlapCreator(config);
+   this.table = new TableCreator(config);
 will create a grid in the container with the ID=result with country label, element label in row and the year in columns, group by the item: the aggregation function used will be the sum for the columns "value"
 
 
@@ -101,5 +101,5 @@ will create a grid in the container with the ID=result with country label, eleme
 #update
 the update function allow the user to modify the config file and refresh the grid : model,el have don't need to be provided.
 example
-this.olap.update({type:"area"})
+this.table.update({type:"area"})
 

@@ -8,7 +8,7 @@ define([
     'fenix-ui-pivotator',
     '../../html/renderers/sigmagrid.hbs',
     '../../config/renderers/sigmagrid',
-    '../gt_grid_all'
+    '../lib/sigmagrid'
 ], function ($, _, log, ERR, EVT, C, Pivotator, Template, sigmagridConfig, Sigma) {
 
     'use strict';
