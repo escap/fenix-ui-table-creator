@@ -22,7 +22,7 @@ define([
 
         this._importThirdPartyCss();
 
-        log.setLevel('silent');
+        log.setLevel('trace');
         this.fenixTool = new FenixTool();
         this.start();
     }
