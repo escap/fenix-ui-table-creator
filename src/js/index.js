@@ -39,6 +39,7 @@ define([
 
     // API
     Table.prototype.update = function (config) {
+
         this.table.model = this.pivotator.pivot(this.model, config);
         this.table.update(config);
     };
@@ -168,11 +169,7 @@ define([
 
     Table.prototype._renderTable = function () {
         var Renderer = this._getRenderer(this.type);
-//console.log("_renderTable",this.pivotatorConfig,"initi",this.initial)
         var myPivotatorConfig = $.extend(true, {}, this.initial, this.fenixTool.parseInput(this.model.metadata.dsd, this.pivotatorConfig));
-
-//console.log("myPivotatorConfig",myPivotatorConfig)
-//console.log("OLAP",this.model, myPivotatorConfig)
 
         var model = this.pivotator.pivot(this.model, myPivotatorConfig);
 
@@ -182,7 +179,6 @@ define([
             el: this.$el,
             lang: this.lang
         });
-//console.log("table renderer",config)
         this.table = new Renderer(config);
         this._trigger("ready");
     };

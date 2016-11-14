@@ -20,9 +20,12 @@ define([
 
     function Dev() {
 
+        console.clear();
+
         this._importThirdPartyCss();
 
-        log.setLevel('trace');
+        log.setLevel('silent');
+
         this.fenixTool = new FenixTool();
         this.start();
     }
@@ -78,7 +81,8 @@ define([
 
             config = $.extend(true, {}, {
                     model: Model,
-                    el: "#olap-interaction"
+                    el: "#olap-interaction",
+                    lang : "FR"
                 }, config
                 //,derived
             );
@@ -90,7 +94,6 @@ define([
             for (var d in config.derived) {
                 config.aggregations.push(d);
             }
-
 
             this.olap = new OlapCreator(config);
         }, this));

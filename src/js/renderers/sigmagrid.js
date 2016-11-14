@@ -20,7 +20,6 @@ define([
         log.info("FENIX Sigmagrid");
         log.info(o);
 
-
         $.extend(true, this, C, o);
 
         var valid = this._validateInput();
@@ -112,18 +111,19 @@ define([
     };
 
     Sigmagrid.prototype._renderSigmagrid = function (obj) {
-        //console.log("_renderSigmagrid", obj)
+
         var model = this.model,
             dsOption = {fields: [], recordType: 'array', data: model.data},
             colsOption = [],
             colstemp = this.pivotator.toTree(model.cols2, 'colspan'),
             colstempL = this.pivotator.toTree(model.cols2label, 'colspan');
+
         var hidden2 = {};
         for (var i in obj.hidden) {
             hidden2[obj.hidden[i]] = true
         }
 
-        // create sigmagrid config
+
         for (var i in model.rowname) {
             //console.log(model,obj)
             if (model.rowname.hasOwnProperty(i)) {
@@ -131,7 +131,7 @@ define([
 
                 colsOption.push({
                     id: model.rowname[i].id,
-                    header: model.rowname[i].title[this.lang],
+                    header: model.rowname[i].title[this.lang] || model.rowname[i].title["EN"],
                     frozen: true,
                     //hidden:b,
                     hidden: hidden2.hasOwnProperty(model.rowname[i].id),
@@ -142,26 +142,6 @@ define([
                 dsOption.fields.push({name: model.rowname[i].id});
             }
         }
-
-
-        // hiddenCol
-        /*  for (var i in obj.hidden) {
-         console.log("hidden",i,obj)
-         //if (model.rowname.hasOwnProperty(i)) {
-         colsOption.push( {
-         id: obj.hidden[i],
-         header:  obj.hidden[i],
-
-         hidden:false
-
-         });
-         console.log("tet iden",obj.hidden[i])
-         dsOption.fields.push({name:  obj.hidden[i]});
-         //}
-         }*/
-
-
-        //console.log("OBJ",obj,colstemp)
 
         for (var i in colstemp) {
 
@@ -195,7 +175,6 @@ define([
                 //}
             }
             else {
-//console.log("cas2",colstemp[i])
                 if (i == colstemp.length - 1) {
                     for (var j in colstemp[i]) {
                         colsOption.push({
@@ -221,24 +200,13 @@ define([
             container: this.id + "_" + this.id + idj
         });
 
-
-        //  Sigma.destroyGrids();
-        mygrid = null;
-        //	console.log($el,id)
-
         this.$el.find(".datagrid").remove();
-        //this.$el.find(".datagrid").empty();
-        //$("#" + this.id + "_" + this.id+idj).empty();
 
         this.$el.append("<div id='" + this.id + "_" + this.id + idj + "' class='datagrid' />");
-        //console.log("gridOption", gridOption)
 
         mygrid = new Sigma.Grid(gridOption);
-        //Sigma.Util.onLoad(
 
         Sigma.Grid.render(mygrid)();
-        //mygrid.reload();
-        //);
 
         this._trigger("ready");
 
@@ -260,55 +228,7 @@ define([
     };
 
     Sigmagrid.prototype._populateData = function (type, model, config) {
-        /*switch (type.toLowerCase()) {
-         //add type process
-         case "heatmap":
-         break;
-         case "boxplot":
-         //console.log(model.data);
-         //	console.log(jStat(model.data).quartiles());
 
-         var tempData = [];
-         for (var i in model.rows) {
-         //if (i >20) {break;}
-         config.xAxis.categories.push(model.rows[i].join("_"));
-         // config.xAxis.categories.push("test"+i);
-
-         var ddata = [jStat(model.data[i]).min() + 0].concat(jStat(model.data[i]).quartiles().concat(jStat(model.data[i]).max()))
-         //console.log("JSTAT",ddata)
-         tempData.push(ddata);
-
-         }
-
-         config.series.push({data: tempData});
-
-         break;
-         default:
-
-         for (var ii in model.cols) {
-
-         if (model.cols.hasOwnProperty(ii)) {
-         i = model.cols[ii];
-
-         config.xAxis.categories.push(i.title[this.lang]);
-
-         }
-         }
-
-         for (var i in model.rows) {
-         if (i > 20) {
-         break;
-         }
-         //	 console.log("1 ",config.series)
-         config.series.push({
-         name: model.rows[i].join(" "),
-         data: model.data[i]
-         });
-         //	 console.log("2 ",config.series)
-
-         }
-         ;
-         }*/
         return config;
     };
 
@@ -326,8 +246,6 @@ define([
     };
 
     Sigmagrid.prototype.dispose = function () {
-
-        //this.chart.dispose(); change in highchart destroy
 
         //unbind event listeners
         this._unbindEventListeners();
