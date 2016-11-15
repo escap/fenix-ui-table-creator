@@ -145,7 +145,9 @@ define([
         this.channels = {};
 
         this.pivotator = new Pivotator();
-        this.fenixTool = new FenixTool();
+        this.fenixTool = new FenixTool({
+            lang: this.lang
+        });
     };
 
     // Preload scripts
