@@ -13,8 +13,8 @@ define([
 
     var selectorPath = "./renderers/";
 
-    function Table(o) {
-        log.info("FENIX Table");
+    function Olap(o) {
+        log.info("FENIX Olap");
         log.info(o);
 
         //Import css
@@ -29,26 +29,25 @@ define([
         if (valid === true) {
             this._initVariables();
             this._bindEventListeners();
-            this._renderTable();
+            this._renderOlap();
             return this;
         } else {
-            log.error("Impossible to create Table");
+            log.error("Impossible to create Olap");
             log.error(valid)
         }
     }
 
     // API
-    Table.prototype.update = function (config) {
-
-        this.table.model = this.pivotator.pivot(this.model, config);
-        this.table.update(config);
+    Olap.prototype.update = function (config) {
+        this.olap.model = this.pivotator.pivot(this.model, config);
+        this.olap.update(config);
     };
 
     /**
      * pub/sub
      * @return {Object} component instance
      */
-    Table.prototype.on = function (channel, fn, context) {
+    Olap.prototype.on = function (channel, fn, context) {
         var _context = context || this;
         if (!this.channels[channel]) {
             this.channels[channel] = [];
@@ -57,7 +56,7 @@ define([
         return this;
     };
 
-    Table.prototype._trigger = function (channel) {
+    Olap.prototype._trigger = function (channel) {
         if (!this.channels[channel]) {
             return false;
         }
@@ -71,7 +70,7 @@ define([
 
     // end API
 
-    Table.prototype._parseInput = function () {
+    Olap.prototype._parseInput = function () {
         this.id = this.initial.id;
         this.$el = $(this.initial.el);
         this.model = this.initial.model;
@@ -106,17 +105,17 @@ define([
         this.pivotatorConfig = pc;
         this.type = this.initial.type || C.type;
         this.lang = this.initial.lang || C.lang;
-        this.lang = this.lang.toUpperCase();
+        this.lang = this.lang.toLowerCase();
     };
 
-    Table.prototype._validateInput = function () {
+    Olap.prototype._validateInput = function () {
         var valid = true,
             errors = [];
 
-        //set table id
+        //set olap id
         if (!this.id) {
-            window.fx_table_id >= 0 ? window.fx_table_id++ : window.fx_table_id = 0;
-            this.id = String(window.fx_table_id);
+            window.fx_olap_id >= 0 ? window.fx_olap_id++ : window.fx_olap_id = 0;
+            this.id = String(window.fx_olap_id);
             log.info("Set table id to: " + this.id);
         }
 
@@ -135,22 +134,24 @@ define([
         return errors.length > 0 ? errors : valid;
     };
 
-    Table.prototype._bindEventListeners = function () {
+    Olap.prototype._bindEventListeners = function () {
 
     };
 
-    Table.prototype._initVariables = function () {
+    Olap.prototype._initVariables = function () {
 
         //pub/sub
         this.channels = {};
 
         this.pivotator = new Pivotator();
-        this.fenixTool = new FenixTool();
+        this.fenixTool = new FenixTool({
+            lang: this.lang
+        });
     };
 
     // Preload scripts
 
-    Table.prototype._getPluginPath = function (name) {
+    Olap.prototype._getPluginPath = function (name) {
 
         var registeredSelectors = $.extend(true, {}, this.pluginRegistry), path;
         var conf = registeredSelectors[name];
@@ -167,9 +168,13 @@ define([
         return selectorPath + path;
     };
 
-    Table.prototype._renderTable = function () {
+    Olap.prototype._renderOlap = function () {
         var Renderer = this._getRenderer(this.type);
+//console.log("_renderOlap",this.pivotatorConfig,"initi",this.initial)
         var myPivotatorConfig = $.extend(true, {}, this.initial, this.fenixTool.parseInput(this.model.metadata.dsd, this.pivotatorConfig));
+
+//console.log("myPivotatorConfig",myPivotatorConfig)
+//console.log("OLAP",this.model, myPivotatorConfig)
 
         var model = this.pivotator.pivot(this.model, myPivotatorConfig);
 
@@ -179,33 +184,34 @@ define([
             el: this.$el,
             lang: this.lang
         });
-        this.table = new Renderer(config);
+//console.log("olap renderer",config)
+        this.olap = new Renderer(config);
         this._trigger("ready");
     };
 
-    Table.prototype._getEventName = function (evt) {
+    Olap.prototype._getEventName = function (evt) {
         return this.id.concat(evt);
     };
 
-    Table.prototype._getRenderer = function (name) {
+    Olap.prototype._getRenderer = function (name) {
         return require(this._getPluginPath(name) + ".js");
     };
 
     //disposition
-    Table.prototype._unbindEventListeners = function () {
+    Olap.prototype._unbindEventListeners = function () {
 
         //amplify.unsubscribe(this._getEventName(EVT.SELECTOR_READY), this._onSelectorReady);
 
     };
 
-    Table.prototype.dispose = function () {
-        this.table.dispose();
+    Olap.prototype.dispose = function () {
+        this.olap.dispose();
         //unbind event listeners
         this._unbindEventListeners();
     };
 
-    Table.prototype._callSelectorInstanceMethod = function (name, method, opts1, opts2) {
-        var Instance = this.table;
+    Olap.prototype._callSelectorInstanceMethod = function (name, method, opts1, opts2) {
+        var Instance = this.olap;
         if ($.isFunction(Instance[method])) {
             return Instance[method](opts1, opts2);
         }
@@ -214,5 +220,5 @@ define([
         }
     };
 
-    return Table;
+    return Olap;
 });
