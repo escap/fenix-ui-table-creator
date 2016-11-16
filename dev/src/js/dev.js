@@ -46,7 +46,7 @@ define([
 
         this.filter = new Filter({
             el: s.FILTER_INTERACTION,
-            items: items
+            selectors: items
         });
 
         this.filter.on("ready", _.bind(function () {
