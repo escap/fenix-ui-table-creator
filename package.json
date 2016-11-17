@@ -1,6 +1,6 @@
 {
   "name": "fenix-ui-table-creator",
-  "version": "3.0.0-beta.3",
+  "version": "3.0.0-beta.4",
   "description": "FENIX table component creator",
   "homepage": "https://github.com/FENIX-Platform/fenix-ui-table-creator",
   "author": "FENIX Development Team",
@@ -17,8 +17,8 @@
     "platform"
   ],
   "dependencies": {
-    "fenix-ui-pivotator": "^1.0.0-beta.4",
-    "fenix-ui-pivotator-utils": "^1.0.0-beta.1",
+    "fenix-ui-pivotator": "^1.0.0-beta.5",
+    "fenix-ui-pivotator-utils": "^1.0.0-beta.4",
     "jquery": "^2.1.0",
     "loglevel": "^1.4.1",
     "underscore": "^1.7.0"
@@ -37,6 +37,7 @@
     "html-loader": "^0.4.4",
     "html-webpack-plugin": "^2.22.0",
     "image-webpack-loader": "^2.0.0",
+    "imports-loader": "^0.6.5",
     "jshint": "^2.9.3",
     "jshint-loader": "^0.8.3",
     "json-loader": "^0.5.4",

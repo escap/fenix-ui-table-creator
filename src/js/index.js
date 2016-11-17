@@ -144,9 +144,7 @@ define([
         this.channels = {};
 
         this.pivotator = new Pivotator();
-        this.fenixTool = new FenixTool({
-            lang: this.lang
-        });
+        this.fenixTool = new FenixTool();
     };
 
     // Preload scripts
@@ -170,11 +168,7 @@ define([
 
     Olap.prototype._renderOlap = function () {
         var Renderer = this._getRenderer(this.type);
-//console.log("_renderOlap",this.pivotatorConfig,"initi",this.initial)
-        var myPivotatorConfig = $.extend(true, {}, this.initial, this.fenixTool.parseInput(this.model.metadata.dsd, this.pivotatorConfig));
-
-//console.log("myPivotatorConfig",myPivotatorConfig)
-//console.log("OLAP",this.model, myPivotatorConfig)
+        var myPivotatorConfig = $.extend(true, {lang : this.lang.toUpperCase()}, this.initial, this.fenixTool.parseInput(this.model.metadata.dsd, this.pivotatorConfig));
 
         var model = this.pivotator.pivot(this.model, myPivotatorConfig);
 
@@ -184,8 +178,9 @@ define([
             el: this.$el,
             lang: this.lang
         });
-//console.log("olap renderer",config)
+
         this.olap = new Renderer(config);
+
         this._trigger("ready");
     };
 
@@ -200,13 +195,11 @@ define([
     //disposition
     Olap.prototype._unbindEventListeners = function () {
 
-        //amplify.unsubscribe(this._getEventName(EVT.SELECTOR_READY), this._onSelectorReady);
-
     };
 
     Olap.prototype.dispose = function () {
+
         this.olap.dispose();
-        //unbind event listeners
         this._unbindEventListeners();
     };
 

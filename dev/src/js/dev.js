@@ -7,8 +7,9 @@ define([
     'fenix-ui-filter',
     'fenix-ui-pivotator-utils',
     'dev/src/models/UNECA_Education.json',
+    'dev/src/models/all',
     'dev/src/models/filter-interaction'
-], function (log, $, _, OlapCreator, Filter, FenixTool, Model, FilterModel) {
+], function (log, $, _, OlapCreator, Filter, FenixTool, Model, AllModel, FilterModel) {
 
     'use strict';
 
@@ -82,7 +83,7 @@ define([
             config = $.extend(true, {}, {
                     model: Model,
                     el: "#olap-interaction",
-                    lang : "FR"
+                    lang : "EN"
                 }, config
                 //,derived
             );
@@ -90,12 +91,12 @@ define([
             log.trace("Init Olap");
             log.trace(config);
 
-
             for (var d in config.derived) {
                 config.aggregations.push(d);
             }
 
             this.olap = new OlapCreator(config);
+
         }, this));
 
         this.filter.on("change", _.bind(function () {

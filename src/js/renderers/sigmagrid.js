@@ -100,6 +100,8 @@ define([
             log.info("Set signagrid id to: " + this.id);
         }
 
+        this.lang = this.lang.toUpperCase();
+
         this.$el = $(this.el);
 
     };
@@ -125,18 +127,13 @@ define([
 
 
         for (var i in model.rowname) {
-            //console.log(model,obj)
-            if (model.rowname.hasOwnProperty(i)) {
-                //var b=Math.random()>0.5;
 
+            if (model.rowname.hasOwnProperty(i)) {
                 colsOption.push({
                     id: model.rowname[i].id,
                     header: model.rowname[i].title[this.lang] || model.rowname[i].title["EN"],
                     frozen: true,
-                    //hidden:b,
                     hidden: hidden2.hasOwnProperty(model.rowname[i].id),
-                    //hidden:hidden2.hasOwnProperty(model.rowname[i].id),
-                    //hidden:hidden2.hasOwnProperty(model.rowname[i].id),
                     grouped: obj.groupedRow
                 });
                 dsOption.fields.push({name: model.rowname[i].id});
@@ -146,9 +143,7 @@ define([
         for (var i in colstemp) {
 
             if (obj.values.length > 1 || obj.columns.length == 0) {
-                //console.log("cas1")
 
-                //for(var v in optGr.VALS){
                 if (i == colstemp.length - 1) {
                     for (var j in colstemp[i]) {
                         //console.log("test",optGr.VALS)
