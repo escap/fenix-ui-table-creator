@@ -131,7 +131,7 @@ define([
             if (model.rowname.hasOwnProperty(i)) {
                 colsOption.push({
                     id: model.rowname[i].id,
-                    header: model.rowname[i].title[this.lang] || model.rowname[i].title["EN"],
+                    header: model.rowname[i].title[this.lang]|| model.rowname[i].title[C.lang],
                     frozen: true,
                     hidden: hidden2.hasOwnProperty(model.rowname[i].id),
                     grouped: obj.groupedRow
