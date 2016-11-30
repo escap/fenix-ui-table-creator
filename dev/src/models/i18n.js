@@ -1,4 +1,4 @@
-module.exports ={
+module.exports = {
     "metadata" : {
         "rid" : "12_2318",
         "uid" : "D3S_68144514928248275487464565488035481621",
