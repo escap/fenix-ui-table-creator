@@ -8,8 +8,9 @@ define([
     'fenix-ui-pivotator-utils',
     'dev/src/models/UNECA_Education.json',
     'dev/src/models/all',
-    'dev/src/models/filter-interaction'
-], function (log, $, _, OlapCreator, Filter, FenixTool, Model, AllModel, FilterModel) {
+    'dev/src/models/filter-interaction',
+    'dev/src/models/i18n',
+], function (log, $, _, OlapCreator, Filter, FenixTool, Model, AllModel, FilterModel, i18nModel) {
 
     'use strict';
 
@@ -39,7 +40,7 @@ define([
     Dev.prototype._testFilterInteraction = function () {
 
         //create filter configuration
-        var itemsFromFenixTool = this.fenixTool.toFilter(Model);
+        var itemsFromFenixTool = this.fenixTool.toFilter(i18nModel);
         //FilterModel contains static filter selectors, e.g. show code, show unit
         var items = $.extend(true, {}, FilterModel, itemsFromFenixTool);
 
@@ -53,35 +54,9 @@ define([
         this.filter.on("ready", _.bind(function () {
 
             var config = this._getOlapConfigFromFilter();
-            //	console.log("config",config)
-            //console.log("Model",Model)
-            //var derived={derived:{"Indicator_EN_":function(rec){return "("+rec["IndicatorCode"]+")"+rec["IndicatorCode_EN"]}}}
-            /* config={"values":["Value"],
-             "formatter":"localstring",
-             "aggregationFn":{"value":"sum","Value":"sum"},
-             "decimals":["2"],"showRowHeaders":true,"aggregations":[],
-             }*/
-
-            /*{"aggregationFn":{"value":"sum","Value":"sum"},
-             "formatter":"localstring",
-             "decimals":["2"],
-             //"groupedRow":true,
-             "showRowHeaders":true,
-             "hidden":[],
-             //"rows":["Commodity_EN","CountryCode_EN","IndicatorCode_EN"],
-             //"columns":["Year"],
-             "aggregations":[],
-             "values":["Value"],
-             //"inputFormat" : "fenixtool"
-
-             }*/
-            ;
-
-
-            //console.log("config",config)
 
             config = $.extend(true, {}, {
-                    model: Model,
+                    model: i18nModel,
                     el: "#olap-interaction",
                     lang : "EN"
                 }, config

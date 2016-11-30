@@ -129,6 +129,7 @@ define([
         for (var i in model.rowname) {
 
             if (model.rowname.hasOwnProperty(i)) {
+
                 colsOption.push({
                     id: model.rowname[i].id,
                     header: model.rowname[i].title[this.lang]|| model.rowname[i].title[C.lang],
