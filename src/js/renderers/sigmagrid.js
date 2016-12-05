@@ -117,8 +117,8 @@ var idj=0;
 
     Sigmagrid.prototype._renderSigmagrid = function (obj) {
 	//	console.log("_renderSigmagrid", obj)
-		
-		
+
+
         var model = this.model,
             dsOption = {fields: [], recordType: 'array', data: model.data},
             colsOption = [],
@@ -136,8 +136,8 @@ var idj=0;
                 colsOption.push( {
                     id: model.rowname[i].id,
                     header: model.rowname[i].title[this.lang],
-                    frozen: true,
-					
+                    frozen: false,
+
 					//hidden:b,
 					hidden:hidden2.hasOwnProperty(model.rowname[i].id),
 					//hidden:hidden2.hasOwnProperty(model.rowname[i].id),
@@ -221,7 +221,7 @@ idj++;
             columns: colsOption,
             container: this.id + "_" + this.id+idj
         });
-
+        //console.log(gridOption);
 
       //  Sigma.destroyGrids();
 		mygrid=null;
@@ -234,6 +234,7 @@ idj++;
         this.$el.append("<div id='" + this.id + "_" + this.id+idj + "' class='datagrid' />");
 		    //console.log("gridOption", gridOption)
          mygrid = new Sigma.Grid(gridOption);
+         
         	//Sigma.Util.onLoad(
 //mygrid.tools.csvTool.onclick=function(event,grid,e){console.log("GRID",Sigma.activeGrid.dataset);}
         Sigma.Grid.render(mygrid)();
@@ -249,7 +250,7 @@ idj++;
 
     };
 
-	
+
     Sigmagrid.prototype._createOlapHeader = function (model, obj, colstemp) {
         var headerModel = {};
         headerModel.rowname = model.rowname.slice(0);
